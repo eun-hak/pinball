@@ -1,0 +1,87 @@
+{
+  "name": "SpinSnap Arcade - 무료 온라인 물리 엔진 게임",
+  "short_name": "SpinSnap Arcade",
+  "description": "물리 엔진으로 구현된 다양한 인터랙티브 게임을 즐겨보세요. 플링코, 마블 레이스, 서바이벌, 컬러 컨퀘스트까지!",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "orientation": "any",
+  "categories": ["games", "entertainment"],
+  "lang": "ko-KR",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/og-image.svg",
+      "sizes": "1200x630",
+      "type": "image/svg+xml",
+      "label": "SpinSnap Arcade 홈화면"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "플링코 게임",
+      "short_name": "플링코",
+      "description": "행운을 시험하는 확률 게임",
+      "url": "/plinko",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "마블 레이스",
+      "short_name": "레이스",
+      "description": "스릴 넘치는 경주 게임",
+      "url": "/race",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "서바이벌",
+      "short_name": "서바이벌",
+      "description": "배틀로얄 생존 게임",
+      "url": "/survival",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Color Conquest",
+      "short_name": "컬러",
+      "description": "영토 전쟁 게임",
+      "url": "/color",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": []
+}
+
