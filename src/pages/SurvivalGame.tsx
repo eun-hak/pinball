@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react';
-import { Play, RotateCcw, Plus, X, Trophy, Skull, Bomb } from 'lucide-react';
+import { Play, RotateCcw, Plus, X, Trophy, Skull, Bomb, ArrowLeft } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 
@@ -402,8 +402,8 @@ export function SurvivalGame() {
 
   return (
     <div className="flex gap-6 p-8 min-h-screen">
-      {/* Left Panel */}
-      <div className="w-80 space-y-6">
+      {/* Left Panel - PC: 항상 보임, Mobile: 게임 시작 전에만 보임 */}
+      <div className={`w-80 space-y-6 ${isPlaying ? 'hidden md:block' : 'block'}`}>
         <div className="bg-gray-900/80 backdrop-blur-md border border-gray-800 rounded-xl p-6 shadow-lg">
           <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
             💣 서바이벌 참가자
@@ -515,8 +515,23 @@ export function SurvivalGame() {
         </div>
       </div>
 
-      {/* Main Canvas */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-gray-950/50 rounded-xl border border-gray-800 shadow-2xl p-4">
+      {/* Main Canvas - PC: 항상 보임, Mobile: 게임 시작 후에만 보임 */}
+      <div className={`flex-1 flex flex-col items-center justify-center bg-gray-950/50 rounded-xl border border-gray-800 shadow-2xl p-4 ${isPlaying ? 'flex' : 'hidden md:flex'}`}>
+        {/* Mobile: 게임 중 뒤로가기 버튼 */}
+        {isPlaying && (
+          <div className="w-full flex justify-start mb-3 md:hidden">
+            <Button
+              onClick={resetGame}
+              variant="ghost"
+              size="sm"
+              className="text-gray-400 hover:text-white"
+            >
+              <ArrowLeft className="size-4 mr-2" />
+              설정으로
+            </Button>
+          </div>
+        )}
+        
         <canvas
           ref={canvasRef}
           width={CANVAS_SIZE}

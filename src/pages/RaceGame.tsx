@@ -1,9 +1,9 @@
-'use client'
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { Play, RotateCcw, Plus, X, Trophy } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
+import { useEffect, useRef, useState } from "react";
+import { Play, RotateCcw, Plus, X, Trophy, ArrowLeft } from "lucide-react";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
 
 interface RaceBall {
   id: number;
@@ -20,7 +20,7 @@ interface RaceBall {
 }
 
 interface Obstacle {
-  type: 'peg' | 'zigzag' | 'triangle' | 'spinner' | 'platform';
+  type: "peg" | "zigzag" | "triangle" | "spinner" | "platform";
   x: number;
   y: number;
   width?: number;
@@ -31,9 +31,18 @@ interface Obstacle {
 }
 
 const COLORS = [
-  '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
-  '#FFEAA7', '#A29BFE', '#FD79A8', '#6C5CE7', 
-  '#00B894', '#FDCB6E', '#E17055', '#FF85A2'
+  "#FF6B6B",
+  "#4ECDC4",
+  "#45B7D1",
+  "#96CEB4",
+  "#FFEAA7",
+  "#A29BFE",
+  "#FD79A8",
+  "#6C5CE7",
+  "#00B894",
+  "#FDCB6E",
+  "#E17055",
+  "#FF85A2",
 ];
 
 export function RaceGame() {
@@ -41,10 +50,12 @@ export function RaceGame() {
   const containerRef = useRef<HTMLDivElement>(null);
   const ballsRef = useRef<RaceBall[]>([]);
   const obstaclesRef = useRef<Obstacle[]>([]);
-  const [players, setPlayers] = useState<string[]>(['짱아', '짱구', '봉미선']);
-  const [newPlayer, setNewPlayer] = useState('');
+  const [players, setPlayers] = useState<string[]>(["짱아", "짱구", "봉미선"]);
+  const [newPlayer, setNewPlayer] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
-  const [rankings, setRankings] = useState<{ name: string; time: number; color: string }[]>([]);
+  const [rankings, setRankings] = useState<
+    { name: string; time: number; color: string }[]
+  >([]);
   const animationRef = useRef<number>();
   const isPlayingRef = useRef(false);
   const timeRef = useRef(0);
@@ -70,43 +81,71 @@ export function RaceGame() {
     // 1. THE SPLITTER (Top)
     // Large triangle to break up the pack immediately
     obstacles.push({
-      type: 'triangle',
+      type: "triangle",
       x: centerX,
       y: 400,
-      radius: 60
+      radius: 60,
     });
 
     // 2. CROSSOVER RAMPS (High speed funneling)
     // Steep angles to ensure no stopping
     const rampAngle = 0.4; // ~23 degrees
-    
+
     // Left-to-Right Ramps
-    obstacles.push({ type: 'zigzag', x: centerX - 250, y: 600, width: 350, height: 20, angle: rampAngle });
-    obstacles.push({ type: 'zigzag', x: centerX + 250, y: 800, width: 350, height: 20, angle: -rampAngle });
-    
+    obstacles.push({
+      type: "zigzag",
+      x: centerX - 250,
+      y: 600,
+      width: 350,
+      height: 20,
+      angle: rampAngle,
+    });
+    obstacles.push({
+      type: "zigzag",
+      x: centerX + 250,
+      y: 800,
+      width: 350,
+      height: 20,
+      angle: -rampAngle,
+    });
+
     // Right-to-Left Ramps
-    obstacles.push({ type: 'zigzag', x: centerX - 250, y: 1000, width: 350, height: 20, angle: rampAngle });
-    obstacles.push({ type: 'zigzag', x: centerX + 250, y: 1200, width: 350, height: 20, angle: -rampAngle });
+    obstacles.push({
+      type: "zigzag",
+      x: centerX - 250,
+      y: 1000,
+      width: 350,
+      height: 20,
+      angle: rampAngle,
+    });
+    obstacles.push({
+      type: "zigzag",
+      x: centerX + 250,
+      y: 1200,
+      width: 350,
+      height: 20,
+      angle: -rampAngle,
+    });
 
     // 3. SPINNER CHAOS ZONE (Active Obstacles)
     // Multiple spinners rotating in different directions
     for (let i = 0; i < 4; i++) {
       const y = 1500 + i * 450;
-      
+
       // Center spinner
       obstacles.push({
-        type: 'spinner',
+        type: "spinner",
         x: centerX,
         y: y,
         width: 300,
         height: 20,
         angle: Math.PI / 4, // Start at angle so balls don't hit flat
-        speed: i % 2 === 0 ? 0.03 : -0.03
+        speed: i % 2 === 0 ? 0.03 : -0.03,
       });
 
       // Side bumpers to keep balls in play
-      obstacles.push({ type: 'triangle', x: centerX - 300, y: y, radius: 30 });
-      obstacles.push({ type: 'triangle', x: centerX + 300, y: y, radius: 30 });
+      obstacles.push({ type: "triangle", x: centerX - 300, y: y, radius: 30 });
+      obstacles.push({ type: "triangle", x: centerX + 300, y: y, radius: 30 });
     }
 
     // 4. THE PLINKO FIELD (Randomness)
@@ -115,17 +154,17 @@ export function RaceGame() {
       const y = 3000 + row * 120;
       const isOdd = row % 2 !== 0;
       const cols = isOdd ? 6 : 7;
-      
+
       for (let col = 0; col < cols; col++) {
         const x = centerX - 300 + col * 100 + (isOdd ? 50 : 0);
         // Randomly skip some pegs to create "lanes"
         if (Math.random() > 0.1) {
-           obstacles.push({
-             type: 'peg',
-             x: x,
-             y: y,
-             radius: 10
-           });
+          obstacles.push({
+            type: "peg",
+            x: x,
+            y: y,
+            radius: 10,
+          });
         }
       }
     }
@@ -136,7 +175,7 @@ export function RaceGame() {
   const addPlayer = () => {
     if (newPlayer.trim() && players.length < 20) {
       setPlayers([...players, newPlayer.trim()]);
-      setNewPlayer('');
+      setNewPlayer("");
     }
   };
 
@@ -156,7 +195,7 @@ export function RaceGame() {
     const startX = centerX - ((players.length - 1) * spacing) / 2;
 
     // Scroll to top
-    containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    containerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
 
     ballsRef.current = players.map((name, i) => ({
       id: i,
@@ -167,7 +206,7 @@ export function RaceGame() {
       vy: Math.random() * 5 + 2, // Ensure downward start
       radius: BALL_RADIUS,
       color: COLORS[i % COLORS.length],
-      finished: false
+      finished: false,
     }));
   };
 
@@ -183,77 +222,87 @@ export function RaceGame() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     const animate = () => {
       if (isPlayingRef.current) {
-        timeRef.current += 1/60;
+        timeRef.current += 1 / 60;
       }
 
       // Main canvas
-      ctx.fillStyle = '#0a0a0a';
+      ctx.fillStyle = "#0a0a0a";
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
       // Track boundaries
       const centerX = CANVAS_WIDTH / 2;
-      ctx.strokeStyle = '#00ffff';
+      ctx.strokeStyle = "#00ffff";
       ctx.lineWidth = 5;
       ctx.shadowBlur = 15;
-      ctx.shadowColor = '#00ffff';
+      ctx.shadowColor = "#00ffff";
       ctx.beginPath();
-      ctx.moveTo(centerX - TRACK_WIDTH/2, 50);
-      ctx.lineTo(centerX - TRACK_WIDTH/2, FINISH_LINE);
+      ctx.moveTo(centerX - TRACK_WIDTH / 2, 50);
+      ctx.lineTo(centerX - TRACK_WIDTH / 2, FINISH_LINE);
       ctx.stroke();
       ctx.beginPath();
-      ctx.moveTo(centerX + TRACK_WIDTH/2, 50);
-      ctx.lineTo(centerX + TRACK_WIDTH/2, FINISH_LINE);
+      ctx.moveTo(centerX + TRACK_WIDTH / 2, 50);
+      ctx.lineTo(centerX + TRACK_WIDTH / 2, FINISH_LINE);
       ctx.stroke();
       ctx.shadowBlur = 0;
 
       // Finish line
-      ctx.strokeStyle = '#ffff00';
+      ctx.strokeStyle = "#ffff00";
       ctx.lineWidth = 8;
       ctx.shadowBlur = 20;
-      ctx.shadowColor = '#ffff00';
+      ctx.shadowColor = "#ffff00";
       const finishY = FINISH_LINE;
-      
+
       // Checkerboard pattern for finish line
       const checkSize = 40;
       const numChecks = TRACK_WIDTH / checkSize;
       for (let i = 0; i < numChecks; i++) {
         if (i % 2 === 0) {
-          ctx.fillStyle = '#ffff00';
-          ctx.fillRect(centerX - TRACK_WIDTH/2 + i * checkSize, finishY, checkSize, 20);
+          ctx.fillStyle = "#ffff00";
+          ctx.fillRect(
+            centerX - TRACK_WIDTH / 2 + i * checkSize,
+            finishY,
+            checkSize,
+            20
+          );
         }
       }
-      
+
       ctx.shadowBlur = 0;
 
       // Update and draw obstacles
-      obstaclesRef.current.forEach(obs => {
-        ctx.fillStyle = '#333';
-        ctx.strokeStyle = '#00ffff';
+      obstaclesRef.current.forEach((obs) => {
+        ctx.fillStyle = "#333";
+        ctx.strokeStyle = "#00ffff";
         ctx.lineWidth = 3;
 
-        if (obs.type === 'zigzag' && obs.width && obs.height && obs.angle) {
+        if (obs.type === "zigzag" && obs.width && obs.height && obs.angle) {
           ctx.save();
           ctx.translate(obs.x, obs.y);
           ctx.rotate(obs.angle);
-          ctx.fillStyle = '#2a2a2a';
-          ctx.fillRect(-obs.width/2, -obs.height/2, obs.width, obs.height);
-          ctx.strokeRect(-obs.width/2, -obs.height/2, obs.width, obs.height);
-          
+          ctx.fillStyle = "#2a2a2a";
+          ctx.fillRect(-obs.width / 2, -obs.height / 2, obs.width, obs.height);
+          ctx.strokeRect(
+            -obs.width / 2,
+            -obs.height / 2,
+            obs.width,
+            obs.height
+          );
+
           // Add direction arrows
-          ctx.fillStyle = 'rgba(0, 255, 255, 0.3)';
+          ctx.fillStyle = "rgba(0, 255, 255, 0.3)";
           ctx.beginPath();
           ctx.moveTo(-20, -10);
           ctx.lineTo(20, 0);
           ctx.lineTo(-20, 10);
           ctx.fill();
-          
+
           ctx.restore();
-        } else if (obs.type === 'triangle' && obs.radius) {
+        } else if (obs.type === "triangle" && obs.radius) {
           ctx.save();
           ctx.translate(obs.x, obs.y);
           ctx.beginPath();
@@ -265,31 +314,41 @@ export function RaceGame() {
             else ctx.lineTo(x, y);
           }
           ctx.closePath();
-          ctx.fillStyle = '#444';
+          ctx.fillStyle = "#444";
           ctx.fill();
           ctx.stroke();
           ctx.restore();
-        } else if (obs.type === 'peg' && obs.radius) {
+        } else if (obs.type === "peg" && obs.radius) {
           ctx.beginPath();
           ctx.arc(obs.x, obs.y, obs.radius, 0, Math.PI * 2);
-          ctx.fillStyle = '#555';
+          ctx.fillStyle = "#555";
           ctx.fill();
           ctx.stroke();
-        } else if (obs.type === 'spinner' && obs.width && obs.height && obs.speed) {
+        } else if (
+          obs.type === "spinner" &&
+          obs.width &&
+          obs.height &&
+          obs.speed
+        ) {
           obs.angle = (obs.angle || 0) + obs.speed;
           ctx.save();
           ctx.translate(obs.x, obs.y);
           ctx.rotate(obs.angle);
-          ctx.fillStyle = '#666';
-          ctx.fillRect(-obs.width/2, -obs.height/2, obs.width, obs.height);
-          ctx.strokeRect(-obs.width/2, -obs.height/2, obs.width, obs.height);
+          ctx.fillStyle = "#666";
+          ctx.fillRect(-obs.width / 2, -obs.height / 2, obs.width, obs.height);
+          ctx.strokeRect(
+            -obs.width / 2,
+            -obs.height / 2,
+            obs.width,
+            obs.height
+          );
           ctx.restore();
         }
       });
 
       // Update balls
       if (isPlayingRef.current) {
-        ballsRef.current = ballsRef.current.map(ball => {
+        ballsRef.current = ballsRef.current.map((ball) => {
           if (ball.finished) return ball;
 
           let newBall = { ...ball };
@@ -301,9 +360,9 @@ export function RaceGame() {
           newBall.y += newBall.vy;
 
           // Collision with obstacles
-          obstaclesRef.current.forEach(obs => {
+          obstaclesRef.current.forEach((obs) => {
             // Circle collision (Pegs & Triangles approximated as circles for smoother bounce)
-            if (obs.type === 'peg' || obs.type === 'triangle') {
+            if (obs.type === "peg" || obs.type === "triangle") {
               const r = obs.radius || 10;
               const dx = newBall.x - obs.x;
               const dy = newBall.y - obs.y;
@@ -315,22 +374,29 @@ export function RaceGame() {
                 // Move out of collision
                 newBall.x = obs.x + Math.cos(angle) * minDist;
                 newBall.y = obs.y + Math.sin(angle) * minDist;
-                
+
                 // Add some random deviation to prevent stacking
                 const noise = (Math.random() - 0.5) * 0.2;
-                
+
                 // Bounce with energy preservation
-                const speed = Math.sqrt(newBall.vx * newBall.vx + newBall.vy * newBall.vy);
+                const speed = Math.sqrt(
+                  newBall.vx * newBall.vx + newBall.vy * newBall.vy
+                );
                 newBall.vx = Math.cos(angle + noise) * speed * 0.9; // High restitution
                 newBall.vy = Math.sin(angle + noise) * speed * 0.9;
-                
+
                 // Ensure minimal bounce speed
                 if (speed < 1) {
-                    newBall.vx += Math.cos(angle) * 1;
-                    newBall.vy += Math.sin(angle) * 1;
+                  newBall.vx += Math.cos(angle) * 1;
+                  newBall.vy += Math.sin(angle) * 1;
                 }
               }
-            } else if ((obs.type === 'zigzag' || obs.type === 'spinner') && obs.width && obs.height && obs.angle !== undefined) {
+            } else if (
+              (obs.type === "zigzag" || obs.type === "spinner") &&
+              obs.width &&
+              obs.height &&
+              obs.angle !== undefined
+            ) {
               // Rotated rectangle collision
               const localX = newBall.x - obs.x;
               const localY = newBall.y - obs.y;
@@ -338,15 +404,17 @@ export function RaceGame() {
               const sin = Math.sin(-obs.angle);
               const rotatedX = localX * cos - localY * sin;
               const rotatedY = localX * sin + localY * cos;
-              
+
               const halfW = obs.width / 2;
               const halfH = obs.height / 2;
-              
-              if (Math.abs(rotatedX) < halfW + newBall.radius && 
-                  Math.abs(rotatedY) < halfH + newBall.radius) {
-                
-                let dx = 0, dy = 0;
-                
+
+              if (
+                Math.abs(rotatedX) < halfW + newBall.radius &&
+                Math.abs(rotatedY) < halfH + newBall.radius
+              ) {
+                let dx = 0,
+                  dy = 0;
+
                 if (Math.abs(rotatedX) < halfW) {
                   if (rotatedY > 0) {
                     dy = halfH + newBall.radius - rotatedY;
@@ -360,32 +428,33 @@ export function RaceGame() {
                     dx = -(halfW + newBall.radius + rotatedX);
                   }
                 }
-                
+
                 // Rotate back
                 const worldDx = dx * cos + dy * sin;
                 const worldDy = -dx * sin + dy * cos;
-                
+
                 newBall.x += worldDx;
                 newBall.y += worldDy;
-                
+
                 // Reflect velocity logic
                 // Normal vector depends on which face was hit
-                let nx = 0, ny = 0;
+                let nx = 0,
+                  ny = 0;
                 if (dx !== 0) nx = Math.sign(dx);
                 if (dy !== 0) ny = Math.sign(dy);
-                
+
                 // Rotate normal to world space
                 const worldNx = nx * cos + ny * sin;
                 const worldNy = -nx * sin + ny * cos;
-                
+
                 // V' = V - 2(V.N)N
                 const dot = newBall.vx * worldNx + newBall.vy * worldNy;
-                
+
                 newBall.vx = (newBall.vx - 2 * dot * worldNx) * BOUNCE;
                 newBall.vy = (newBall.vy - 2 * dot * worldNy) * BOUNCE;
 
                 // Add "spin" energy from spinner
-                if (obs.type === 'spinner' && obs.speed) {
+                if (obs.type === "spinner" && obs.speed) {
                   const spinForce = obs.speed * 100;
                   newBall.vx += worldNy * spinForce; // Tangential force
                   newBall.vy -= worldNx * spinForce;
@@ -397,19 +466,19 @@ export function RaceGame() {
           // --- STRICT DOWNWARD LOGIC ---
           // 1. Minimum Velocity: Subtle push only if nearly stopped
           if (newBall.vy < MIN_DOWNWARD_VELOCITY) {
-             newBall.vy += 0.1;
+            newBall.vy += 0.1;
           }
 
           // 2. Anti-Stuck Nudge: If horizontal velocity is near zero, give it a push
           // This helps if it balances perfectly on a tip
           if (Math.abs(newBall.vx) < 0.5 && Math.abs(newBall.vy) < 2) {
-             newBall.vx += (Math.random() - 0.5) * 3; // Stronger nudge
+            newBall.vx += (Math.random() - 0.5) * 3; // Stronger nudge
           }
 
           // 3. Wall collisions
-          const leftWall = centerX - TRACK_WIDTH/2;
-          const rightWall = centerX + TRACK_WIDTH/2;
-          
+          const leftWall = centerX - TRACK_WIDTH / 2;
+          const rightWall = centerX + TRACK_WIDTH / 2;
+
           if (newBall.x - newBall.radius < leftWall) {
             newBall.x = leftWall + newBall.radius;
             newBall.vx = Math.abs(newBall.vx) * BOUNCE;
@@ -423,14 +492,23 @@ export function RaceGame() {
           if (newBall.y >= FINISH_LINE && !newBall.finished) {
             newBall.finished = true;
             newBall.finishTime = timeRef.current;
-            const currentRank = ballsRef.current.filter(b => b.finished).length + 1;
+            const currentRank =
+              ballsRef.current.filter((b) => b.finished).length + 1;
             newBall.rank = currentRank;
-            
-            setRankings(prev => [...prev, {
-              name: newBall.name,
-              time: newBall.finishTime,
-              color: newBall.color
-            }].sort((a, b) => a.time - b.time));
+
+            const finishTime = newBall.finishTime;
+            if (finishTime !== undefined) {
+              setRankings((prev) =>
+                [
+                  ...prev,
+                  {
+                    name: newBall.name,
+                    time: finishTime,
+                    color: newBall.color,
+                  },
+                ].sort((a, b) => a.time - b.time)
+              );
+            }
           }
 
           return newBall;
@@ -438,9 +516,9 @@ export function RaceGame() {
       }
 
       // Draw balls
-      ballsRef.current.forEach(ball => {
+      ballsRef.current.forEach((ball) => {
         ctx.save();
-        
+
         // Trail/Glow
         if (!ball.finished) {
           ctx.shadowBlur = 15;
@@ -451,16 +529,16 @@ export function RaceGame() {
         ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
         ctx.fillStyle = ball.color;
         ctx.fill();
-        ctx.strokeStyle = '#fff';
+        ctx.strokeStyle = "#fff";
         ctx.lineWidth = 3;
         ctx.stroke();
 
         // Name label
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 14px Arial';
-        ctx.textAlign = 'center';
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 14px Arial";
+        ctx.textAlign = "center";
         ctx.shadowBlur = 4;
-        ctx.shadowColor = '#000';
+        ctx.shadowColor = "#000";
         ctx.fillText(ball.name, ball.x, ball.y - ball.radius - 10);
 
         ctx.restore();
@@ -480,18 +558,22 @@ export function RaceGame() {
 
   return (
     <div className="flex gap-6 p-8 h-screen overflow-hidden">
-      {/* Left Panel - Fixed */}
-      <div className="w-80 flex-shrink-0 flex flex-col gap-6 h-full overflow-y-auto pb-8">
+      {/* Left Panel - PC: 항상 보임, Mobile: 게임 시작 전에만 보임 */}
+      <div
+        className={`w-80 flex-shrink-0 flex flex-col gap-6 h-full overflow-y-auto pb-8 ${
+          isPlaying ? "hidden md:flex" : "flex"
+        }`}
+      >
         <div className="bg-gray-900/80 backdrop-blur-md border border-gray-800 rounded-xl p-6 shadow-lg">
           <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
             🏁 참가자 설정
           </h3>
-          
+
           <div className="flex gap-2 mb-4">
             <Input
               value={newPlayer}
               onChange={(e) => setNewPlayer(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && addPlayer()}
+              onKeyDown={(e) => e.key === "Enter" && addPlayer()}
               placeholder="이름 입력"
               className="bg-gray-800 border-gray-700 text-white"
               disabled={isPlaying}
@@ -515,7 +597,10 @@ export function RaceGame() {
                 <div className="flex items-center gap-3">
                   <div
                     className="w-4 h-4 rounded-full shadow-[0_0_10px_currentColor]"
-                    style={{ backgroundColor: COLORS[i % COLORS.length], color: COLORS[i % COLORS.length] }}
+                    style={{
+                      backgroundColor: COLORS[i % COLORS.length],
+                      color: COLORS[i % COLORS.length],
+                    }}
                   />
                   <span className="text-white font-medium">{player}</span>
                 </div>
@@ -561,15 +646,24 @@ export function RaceGame() {
                 <div
                   key={i}
                   className={`flex items-center justify-between px-4 py-3 rounded-lg border ${
-                    i === 0 ? 'bg-yellow-900/20 border-yellow-700/50' : 
-                    i === 1 ? 'bg-gray-800/40 border-gray-600/50' : 
-                    i === 2 ? 'bg-orange-900/20 border-orange-800/50' : 
-                    'bg-gray-800/20 border-gray-800'
+                    i === 0
+                      ? "bg-yellow-900/20 border-yellow-700/50"
+                      : i === 1
+                      ? "bg-gray-800/40 border-gray-600/50"
+                      : i === 2
+                      ? "bg-orange-900/20 border-orange-800/50"
+                      : "bg-gray-800/20 border-gray-800"
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-xl w-8 text-center font-bold">
-                      {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}`}
+                      {i === 0
+                        ? "🥇"
+                        : i === 1
+                        ? "🥈"
+                        : i === 2
+                        ? "🥉"
+                        : `${i + 1}`}
                     </span>
                     <div
                       className="w-3 h-3 rounded-full"
@@ -587,33 +681,52 @@ export function RaceGame() {
         )}
       </div>
 
-      {/* Main Canvas Container - Scrollable */}
-      <div 
+      {/* Main Canvas Container - PC: 항상 보임, Mobile: 게임 시작 후에만 보임 */}
+      <div
         ref={containerRef}
-        className="flex-1 h-full overflow-y-auto rounded-xl bg-gray-950/50 border border-gray-800 shadow-2xl relative scroll-smooth"
+        className={`flex-1 h-full overflow-y-auto rounded-xl bg-gray-950/50 border border-gray-800 shadow-2xl relative scroll-smooth ${
+          isPlaying ? "" : "hidden md:flex"
+        }`}
       >
-        <div className="min-h-full flex justify-center p-8">
-           <canvas
-             ref={canvasRef}
-             width={CANVAS_WIDTH}
-             height={CANVAS_HEIGHT}
-             className="bg-gray-900 rounded-lg shadow-2xl"
-             style={{ 
-               width: '100%',
-               maxWidth: '1000px', // Ensure it doesn't get ridiculously wide on huge screens
-               height: 'auto'
-             }}
-           />
-           
-           {!isPlaying && ballsRef.current.length === 0 && (
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-               <div className="bg-black/80 backdrop-blur px-10 py-8 rounded-2xl border border-gray-700 shadow-2xl animate-pulse">
-                 <p className="text-white text-2xl text-center font-bold">
-                   참가자를 추가하고 시작하세요! 🏁
-                 </p>
-               </div>
-             </div>
-           )}
+        {/* Mobile: 게임 중 뒤로가기 버튼 */}
+        {isPlaying && (
+          <div className="absolute top-4 left-4 z-10 md:hidden">
+            <Button
+              onClick={resetRace}
+              variant="ghost"
+              size="sm"
+              className="text-gray-400 hover:text-white bg-gray-900/80 backdrop-blur"
+            >
+              <ArrowLeft className="size-4 mr-2" />
+              설정으로
+            </Button>
+          </div>
+        )}
+
+        <div
+          className={`min-h-full flex justify-center p-4 md:p-8 ${
+            !isPlaying && ballsRef.current.length === 0 ? "items-center" : ""
+          }`}
+        >
+          <canvas
+            ref={canvasRef}
+            width={CANVAS_WIDTH}
+            height={CANVAS_HEIGHT}
+            className="bg-gray-900 rounded-lg shadow-2xl w-full max-w-full md:max-w-[1400px]"
+            style={{
+              height: "auto",
+            }}
+          />
+
+          {!isPlaying && ballsRef.current.length === 0 && (
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+              <div className="bg-black/80 backdrop-blur px-10 py-8 rounded-2xl border border-gray-700 shadow-2xl animate-pulse">
+                <p className="text-white text-2xl text-center font-bold">
+                  참가자를 추가하고 시작하세요! 🏁
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
