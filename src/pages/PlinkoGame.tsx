@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { Play, RotateCcw } from 'lucide-react';
 import { Button } from '../components/ui/button';
 
@@ -37,8 +37,33 @@ const COLORS = [
   '#6C5CE7', '#00B894', '#FDCB6E', '#E17055'
 ];
 
+// 화면 크기 감지 훅
+function useWindowSize() {
+  const [windowSize, setWindowSize] = useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 800,
+    height: typeof window !== 'undefined' ? window.innerHeight : 900,
+  });
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return windowSize;
+}
+
 export function PlinkoGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const ballsRef = useRef<Ball[]>([]);
   const pegsRef = useRef<Peg[]>([]);
   const slotsRef = useRef<Slot[]>([]);
@@ -48,37 +73,77 @@ export function PlinkoGame() {
   const animationRef = useRef<number>();
   const ballIdRef = useRef(0);
   const isPlayingRef = useRef(false);
+  
+  const windowSize = useWindowSize();
+  
+  // 반응형 Canvas 크기 계산
+  const getCanvasSize = useCallback(() => {
+    if (!containerRef.current) {
+      return { width: 800, height: 900 };
+    }
+    
+    const containerWidth = containerRef.current.clientWidth;
+    const isMobile = windowSize.width < 1024; // 1024px 미만은 모바일/태블릿
+    
+    // PC (1024px 이상): 원래 디자인대로 800x900 고정
+    if (!isMobile) {
+      return { width: 800, height: 900 };
+    }
+    
+    // 모바일/태블릿: 반응형
+    const padding = 32; // 좌우 패딩
+    const minWidth = 320;
+    
+    // 화면 너비에 맞춰 계산 (최소 320px, 최대 800px)
+    const canvasWidth = Math.max(minWidth, Math.min(800, containerWidth - padding));
+    // 비율 유지 (800:900 = 8:9)
+    const canvasHeight = (canvasWidth / 8) * 9;
+    
+    return { width: canvasWidth, height: canvasHeight };
+  }, [windowSize.width]);
 
-  const CANVAS_WIDTH = 800;
-  const CANVAS_HEIGHT = 900;
-  const PEG_RADIUS = 4;
-  const BALL_RADIUS = 8;
+  const [canvasSize, setCanvasSize] = useState({ width: 800, height: 900 });
+
+  // 게임 상수 (비율 기반)
+  const BASE_WIDTH = 800;
+  const BASE_HEIGHT = 900;
+  const PEG_RADIUS_RATIO = 4 / BASE_WIDTH;
+  const BALL_RADIUS_RATIO = 8 / BASE_WIDTH;
   const GRAVITY = 0.3;
   const BOUNCE = 0.7;
   const FRICTION = 0.99;
   const NUM_ROWS = 14;
   const NUM_SLOTS = 11;
 
-  useEffect(() => {
-    initializeGame();
-  }, []);
+  // 비율을 실제 크기로 변환
+  const getActualSize = useCallback((ratio: number, dimension: 'width' | 'height') => {
+    return ratio * (dimension === 'width' ? canvasSize.width : canvasSize.height);
+  }, [canvasSize]);
 
-  const initializeGame = () => {
+  // Canvas 크기 업데이트
+  useEffect(() => {
+    const newSize = getCanvasSize();
+    setCanvasSize(newSize);
+  }, [windowSize, getCanvasSize]);
+
+  const initializeGame = useCallback(() => {
+    const { width, height } = canvasSize;
+    
     const newPegs: Peg[] = [];
-    const startY = 150;
-    const rowSpacing = 50;
-    const pegSpacing = 50;
+    const startY = getActualSize(150 / BASE_HEIGHT, 'height');
+    const rowSpacing = getActualSize(50 / BASE_HEIGHT, 'height');
+    const pegSpacing = getActualSize(50 / BASE_WIDTH, 'width');
 
     for (let row = 0; row < NUM_ROWS; row++) {
       const pegsInRow = row + 3;
       const rowWidth = (pegsInRow - 1) * pegSpacing;
-      const startX = (CANVAS_WIDTH - rowWidth) / 2;
+      const startX = (width - rowWidth) / 2;
 
       for (let col = 0; col < pegsInRow; col++) {
         newPegs.push({
           x: startX + col * pegSpacing,
           y: startY + row * rowSpacing,
-          radius: PEG_RADIUS
+          radius: getActualSize(PEG_RADIUS_RATIO, 'width')
         });
       }
     }
@@ -86,7 +151,7 @@ export function PlinkoGame() {
     pegsRef.current = newPegs;
 
     const newSlots: Slot[] = [];
-    const slotWidth = CANVAS_WIDTH / NUM_SLOTS;
+    const slotWidth = width / NUM_SLOTS;
     const multipliers = [10, 5, 3, 2, 1, 0.5, 1, 2, 3, 5, 10];
     const slotColors = ['#FF6B6B', '#FFA07A', '#FFD700', '#90EE90', '#87CEEB', '#DDA0DD', '#87CEEB', '#90EE90', '#FFD700', '#FFA07A', '#FF6B6B'];
 
@@ -100,18 +165,25 @@ export function PlinkoGame() {
     }
 
     slotsRef.current = newSlots;
-  };
+  }, [canvasSize, getActualSize]);
 
-  const dropBall = () => {
+  useEffect(() => {
+    initializeGame();
+  }, [initializeGame]);
+
+  const dropBall = useCallback(() => {
     if (!isPlayingRef.current) return;
+
+    const { width } = canvasSize;
+    const ballRadius = getActualSize(BALL_RADIUS_RATIO, 'width');
 
     const newBall: Ball = {
       id: ballIdRef.current++,
-      x: CANVAS_WIDTH / 2 + (Math.random() - 0.5) * 20,
-      y: 50,
-      vx: (Math.random() - 0.5) * 2,
+      x: width / 2 + (Math.random() - 0.5) * getActualSize(20 / BASE_WIDTH, 'width'),
+      y: getActualSize(50 / BASE_HEIGHT, 'height'),
+      vx: (Math.random() - 0.5) * getActualSize(2 / BASE_WIDTH, 'width'),
       vy: 0,
-      radius: BALL_RADIUS,
+      radius: ballRadius,
       color: COLORS[Math.floor(Math.random() * COLORS.length)],
       landed: false,
       scale: 1,
@@ -120,7 +192,7 @@ export function PlinkoGame() {
 
     ballsRef.current.push(newBall);
     setBallCount(prev => prev + 1);
-  };
+  }, [canvasSize, getActualSize]);
 
   const startGame = () => {
     setIsPlaying(true);
@@ -161,13 +233,23 @@ export function PlinkoGame() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    const { width, height } = canvasSize;
+    
+    // Canvas 실제 크기 설정
+    canvas.width = width;
+    canvas.height = height;
+
     const animate = () => {
       ctx.fillStyle = '#0a0a0a';
-      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      ctx.fillRect(0, 0, width, height);
+
+      const marginX = getActualSize(50 / BASE_WIDTH, 'width');
+      const marginY = getActualSize(100 / BASE_HEIGHT, 'height');
+      const gameAreaHeight = height - getActualSize(200 / BASE_HEIGHT, 'height');
 
       ctx.strokeStyle = '#333';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(50, 100, CANVAS_WIDTH - 100, CANVAS_HEIGHT - 200);
+      ctx.lineWidth = getActualSize(2 / BASE_WIDTH, 'width');
+      ctx.strokeRect(marginX, marginY, width - marginX * 2, gameAreaHeight);
 
       pegsRef.current.forEach(peg => {
         ctx.beginPath();
@@ -175,37 +257,41 @@ export function PlinkoGame() {
         ctx.fillStyle = '#555';
         ctx.fill();
         ctx.strokeStyle = '#888';
-        ctx.lineWidth = 1;
+        ctx.lineWidth = getActualSize(1 / BASE_WIDTH, 'width');
         ctx.stroke();
       });
 
-      const slotWidth = CANVAS_WIDTH / NUM_SLOTS;
-      const slotY = CANVAS_HEIGHT - 100;
+      const slotWidth = width / NUM_SLOTS;
+      const slotY = height - getActualSize(100 / BASE_HEIGHT, 'height');
       
       slotsRef.current.forEach((slot, i) => {
         const x = i * slotWidth;
         
         ctx.strokeStyle = '#444';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = getActualSize(2 / BASE_WIDTH, 'width');
         ctx.beginPath();
         ctx.moveTo(x, slotY);
-        ctx.lineTo(x, CANVAS_HEIGHT - 20);
+        ctx.lineTo(x, height - getActualSize(20 / BASE_HEIGHT, 'height'));
         ctx.stroke();
 
         ctx.fillStyle = slot.color + '20';
-        ctx.fillRect(x, slotY, slotWidth, CANVAS_HEIGHT - slotY - 20);
+        ctx.fillRect(x, slotY, slotWidth, height - slotY - getActualSize(20 / BASE_HEIGHT, 'height'));
 
         ctx.fillStyle = slot.color;
         ctx.textAlign = 'center';
-        ctx.font = 'bold 16px Arial';
-        ctx.fillText(`×${slot.multiplier}`, x + slotWidth / 2, slotY + 30);
+        const fontSize = getActualSize(16 / BASE_WIDTH, 'width');
+        ctx.font = `bold ${fontSize}px Arial`;
+        ctx.fillText(`×${slot.multiplier}`, x + slotWidth / 2, slotY + getActualSize(30 / BASE_HEIGHT, 'height'));
 
         if (slot.count > 0) {
           ctx.fillStyle = '#fff';
-          ctx.font = 'bold 12px Arial';
-          ctx.fillText(`${slot.count}`, x + slotWidth / 2, slotY + 50);
+          const countFontSize = getActualSize(12 / BASE_WIDTH, 'width');
+          ctx.font = `bold ${countFontSize}px Arial`;
+          ctx.fillText(`${slot.count}`, x + slotWidth / 2, slotY + getActualSize(50 / BASE_HEIGHT, 'height'));
         }
       });
+
+      const nearGoalStartY = slotY - getActualSize(150 / BASE_HEIGHT, 'height');
 
       ballsRef.current = ballsRef.current.map(ball => {
         if (ball.landed) return ball;
@@ -218,9 +304,10 @@ export function PlinkoGame() {
         newBall.x += newBall.vx;
         newBall.y += newBall.vy;
 
-        if (newBall.y > slotY - 150 && newBall.y < slotY) {
+        if (newBall.y > nearGoalStartY && newBall.y < slotY) {
           newBall.nearGoal = true;
-          newBall.scale = 1 + (newBall.y - (slotY - 150)) / 150 * 0.8;
+          const goalRange = getActualSize(150 / BASE_HEIGHT, 'height');
+          newBall.scale = 1 + (newBall.y - nearGoalStartY) / goalRange * 0.8;
         } else {
           newBall.nearGoal = false;
           newBall.scale = 1;
@@ -243,16 +330,17 @@ export function PlinkoGame() {
             const speed = Math.sqrt(newBall.vx * newBall.vx + newBall.vy * newBall.vy);
             newBall.vx = Math.cos(angle) * speed * BOUNCE;
             newBall.vy = Math.sin(angle) * speed * BOUNCE;
-            newBall.vx += (Math.random() - 0.5) * 1;
+            newBall.vx += (Math.random() - 0.5) * getActualSize(1 / BASE_WIDTH, 'width');
           }
         });
 
-        if (newBall.x - newBall.radius < 50) {
-          newBall.x = 50 + newBall.radius;
+        const wallMargin = getActualSize(50 / BASE_WIDTH, 'width');
+        if (newBall.x - newBall.radius < wallMargin) {
+          newBall.x = wallMargin + newBall.radius;
           newBall.vx *= -BOUNCE;
         }
-        if (newBall.x + newBall.radius > CANVAS_WIDTH - 50) {
-          newBall.x = CANVAS_WIDTH - 50 - newBall.radius;
+        if (newBall.x + newBall.radius > width - wallMargin) {
+          newBall.x = width - wallMargin - newBall.radius;
           newBall.vx *= -BOUNCE;
         }
 
@@ -262,19 +350,19 @@ export function PlinkoGame() {
           newBall.vx = 0;
           newBall.scale = 1;
 
-          const slotIndex = Math.floor((newBall.x / CANVAS_WIDTH) * NUM_SLOTS);
+          const slotIndex = Math.floor((newBall.x / width) * NUM_SLOTS);
           const clampedIndex = Math.max(0, Math.min(NUM_SLOTS - 1, slotIndex));
           newBall.slot = clampedIndex;
 
           slotsRef.current[clampedIndex].count++;
           setScore(prev => prev + slotsRef.current[clampedIndex].multiplier * 100);
 
-          const slotWidth = CANVAS_WIDTH / NUM_SLOTS;
+          const slotWidth = width / NUM_SLOTS;
           newBall.x = clampedIndex * slotWidth + slotWidth / 2;
         }
 
         return newBall;
-      }).filter(ball => !ball.landed || ball.y < CANVAS_HEIGHT);
+      }).filter(ball => !ball.landed || ball.y < height);
 
       ballsRef.current.forEach(ball => {
         ctx.save();
@@ -283,7 +371,7 @@ export function PlinkoGame() {
         ctx.scale(ball.scale, ball.scale);
         
         if (ball.nearGoal) {
-          ctx.shadowBlur = 20;
+          ctx.shadowBlur = getActualSize(20 / BASE_WIDTH, 'width');
           ctx.shadowColor = ball.color;
         }
 
@@ -310,57 +398,68 @@ export function PlinkoGame() {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, []);
+  }, [canvasSize, getActualSize]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-8 gap-6">
-      <div className="flex items-center justify-between w-full max-w-4xl">
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 md:p-8 gap-4 sm:gap-6">
+      {/* 헤더 - 모바일 반응형 */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full max-w-4xl gap-4">
         <div className="text-white">
-          <h2 className="text-2xl mb-2">🎯 플링코 게임</h2>
-          <div className="flex gap-8">
+          <h2 className="text-xl sm:text-2xl mb-2">🎯 플링코 게임</h2>
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
             <div>
-              <span className="text-gray-400">점수:</span>
-              <span className="ml-2 text-2xl text-yellow-400">{score.toLocaleString()}</span>
+              <span className="text-gray-400 text-sm sm:text-base">점수:</span>
+              <span className="ml-2 text-xl sm:text-2xl text-yellow-400">{score.toLocaleString()}</span>
             </div>
             <div>
-              <span className="text-gray-400">공 개수:</span>
-              <span className="ml-2 text-xl">{ballCount}</span>
+              <span className="text-gray-400 text-sm sm:text-base">공 개수:</span>
+              <span className="ml-2 text-lg sm:text-xl">{ballCount}</span>
             </div>
           </div>
         </div>
         
-        <div className="flex gap-3">
+        <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
           <Button
             onClick={startGame}
             disabled={isPlaying}
             size="lg"
-            className="bg-green-600 hover:bg-green-700"
+            className="bg-green-600 hover:bg-green-700 flex-1 sm:flex-none"
           >
-            <Play className="mr-2 size-5" />
-            시작
+            <Play className="mr-2 size-4 sm:size-5" />
+            <span className="text-sm sm:text-base">시작</span>
           </Button>
           <Button
             onClick={resetGame}
             size="lg"
             variant="outline"
+            className="flex-1 sm:flex-none"
           >
-            <RotateCcw className="mr-2 size-5" />
-            리셋
+            <RotateCcw className="mr-2 size-4 sm:size-5" />
+            <span className="text-sm sm:text-base">리셋</span>
           </Button>
         </div>
       </div>
 
-      <div className="relative">
+      {/* Canvas 컨테이너 - 반응형 */}
+      <div 
+        ref={containerRef}
+        className="relative w-full max-w-[800px] flex justify-center"
+      >
         <canvas
           ref={canvasRef}
-          width={CANVAS_WIDTH}
-          height={CANVAS_HEIGHT}
+          width={canvasSize.width}
+          height={canvasSize.height}
           className="border border-gray-700 rounded-lg shadow-2xl"
+          style={{
+            width: windowSize.width >= 1024 ? '800px' : '100%',
+            height: windowSize.width >= 1024 ? '900px' : 'auto',
+            maxWidth: '100%',
+          }}
         />
         {!isPlaying && ballCount === 0 && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="bg-black/80 px-8 py-6 rounded-lg border border-gray-700">
-              <p className="text-white text-xl text-center">
+            <div className="bg-black/80 px-4 sm:px-8 py-4 sm:py-6 rounded-lg border border-gray-700 mx-4">
+              <p className="text-white text-sm sm:text-xl text-center">
                 시작 버튼을 눌러 게임을 시작하세요! 🎮
               </p>
             </div>
@@ -368,9 +467,10 @@ export function PlinkoGame() {
         )}
       </div>
 
-      <div className="text-gray-400 text-center max-w-2xl">
-        <p>공이 떨어지면서 페그에 부딪히며 슬롯에 도착합니다.</p>
-        <p>골인 직전에는 공이 확대되며 긴장감을 더합니다! 🎯</p>
+      {/* 설명 - 모바일 반응형 */}
+      <div className="text-gray-400 text-center max-w-2xl px-4">
+        <p className="text-sm sm:text-base">공이 떨어지면서 페그에 부딪히며 슬롯에 도착합니다.</p>
+        <p className="text-sm sm:text-base">골인 직전에는 공이 확대되며 긴장감을 더합니다! 🎯</p>
       </div>
     </div>
   );
