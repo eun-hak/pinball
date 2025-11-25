@@ -6,10 +6,10 @@
   ## 프로젝트 분석
 
   이 프로젝트는 다음과 같은 기술 스택을 사용합니다:
+  - **Next.js 14.2.0** - React 프레임워크 (App Router)
   - **React 18.3.1** - UI 라이브러리
   - **TypeScript** - 타입 안정성
-  - **Vite 6.3.5** - 빌드 도구 및 개발 서버
-  - **Tailwind CSS v4** - 스타일링
+  - **Tailwind CSS** - 스타일링
   - **Radix UI** - 접근성 있는 UI 컴포넌트
   - **다양한 게임 모드**: Plinko, Race, Survival, Color Game
 
@@ -37,34 +37,39 @@
   ### 4. 프로덕션 빌드
   ```bash
   npm run build
+  npm start
   ```
-  빌드된 파일은 `build` 폴더에 생성됩니다.
+  빌드된 파일은 `.next` 폴더에 생성됩니다.
 
   ## 프로젝트 구조
 
   ```
   Interactive Pinball Game/
   ├── src/
+  │   ├── app/            # Next.js App Router
+  │   │   ├── layout.tsx  # 루트 레이아웃
+  │   │   ├── page.tsx    # 홈페이지 (/)
+  │   │   ├── plinko/     # 플링코 게임 (/plinko)
+  │   │   ├── race/       # 레이스 게임 (/race)
+  │   │   ├── survival/   # 서바이벌 게임 (/survival)
+  │   │   └── color/      # 컬러 게임 (/color)
   │   ├── components/     # 재사용 가능한 컴포넌트
   │   │   ├── ui/         # UI 컴포넌트 (Radix UI 기반)
   │   │   └── ...
-  │   ├── pages/          # 게임 페이지들
-  │   │   ├── Home.tsx
-  │   │   ├── PlinkoGame.tsx
-  │   │   ├── RaceGame.tsx
-  │   │   ├── SurvivalGame.tsx
-  │   │   └── ColorGame.tsx
-  │   ├── App.tsx         # 메인 앱 컴포넌트
-  │   └── main.tsx        # 진입점
-  ├── index.html
+  │   └── pages/          # 게임 페이지 컴포넌트들
+  │       ├── Home.tsx
+  │       ├── PlinkoGame.tsx
+  │       ├── RaceGame.tsx
+  │       ├── SurvivalGame.tsx
+  │       └── ColorGame.tsx
   ├── package.json
-  ├── tsconfig.json       # TypeScript 설정
-  └── vite.config.ts      # Vite 설정
+  ├── next.config.js      # Next.js 설정
+  └── tsconfig.json       # TypeScript 설정
   ```
 
   ## 문제 해결
 
   - **의존성 설치 오류**: `npm cache clean --force` 후 다시 설치
-  - **포트 충돌**: `vite.config.ts`에서 포트 번호 변경 가능
+  - **포트 충돌**: `next.config.js`에서 포트 번호 변경 가능 (기본값: 3000)
   - **타입 오류**: `npm install` 후 TypeScript 서버 재시작
   

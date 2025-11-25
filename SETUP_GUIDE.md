@@ -2,13 +2,13 @@
 
 ## 📋 프로젝트 분석 결과
 
-이 프로젝트는 **React + TypeScript + Vite** 기반의 인터랙티브 핀볼 게임입니다.
+이 프로젝트는 **Next.js + React + TypeScript** 기반의 인터랙티브 핀볼 게임입니다.
 
 ### 기술 스택
+- **Next.js 14.2.0** - React 프레임워크 (App Router)
 - **React 18.3.1** - UI 프레임워크
 - **TypeScript** - 타입 안정성
-- **Vite 6.3.5** - 빠른 빌드 도구
-- **Tailwind CSS v4** - 유틸리티 CSS 프레임워크
+- **Tailwind CSS** - 유틸리티 CSS 프레임워크
 - **Radix UI** - 접근성 있는 UI 컴포넌트 라이브러리
 
 ### 게임 모드
@@ -62,33 +62,36 @@ npm run dev
 ### 프로덕션 빌드
 ```bash
 npm run build
+npm start
 ```
 
-- 빌드된 파일은 `build` 폴더에 생성됩니다
-- 정적 파일로 배포할 수 있습니다
+- 빌드된 파일은 `.next` 폴더에 생성됩니다
+- Next.js 서버로 배포할 수 있습니다
 
 ## 📁 프로젝트 구조
 
 ```
 Interactive Pinball Game/
 ├── src/
+│   ├── app/                 # Next.js App Router
+│   │   ├── layout.tsx       # 루트 레이아웃
+│   │   ├── page.tsx         # 홈페이지 (/)
+│   │   ├── plinko/          # 플링코 게임 (/plinko)
+│   │   ├── race/            # 레이스 게임 (/race)
+│   │   ├── survival/        # 서바이벌 게임 (/survival)
+│   │   └── color/           # 컬러 게임 (/color)
 │   ├── components/          # 재사용 가능한 컴포넌트
 │   │   ├── ui/              # UI 컴포넌트 (버튼, 다이얼로그 등)
-│   │   ├── Navigation.tsx   # 네비게이션 바
-│   │   └── PinballGame.tsx  # 핀볼 게임 컴포넌트
-│   ├── pages/               # 게임 페이지들
-│   │   ├── Home.tsx         # 홈 페이지
-│   │   ├── PlinkoGame.tsx   # Plinko 게임
-│   │   ├── RaceGame.tsx     # 레이스 게임
-│   │   ├── SurvivalGame.tsx # 생존 게임
-│   │   └── ColorGame.tsx    # 컬러 게임
-│   ├── styles/              # 스타일 파일
-│   ├── App.tsx              # 메인 앱 컴포넌트
-│   └── main.tsx             # 진입점
-├── index.html               # HTML 템플릿
+│   │   └── Navigation.tsx   # 네비게이션 바
+│   └── pages/               # 게임 페이지 컴포넌트들
+│       ├── Home.tsx         # 홈 페이지
+│       ├── PlinkoGame.tsx   # Plinko 게임
+│       ├── RaceGame.tsx     # 레이스 게임
+│       ├── SurvivalGame.tsx # 생존 게임
+│       └── ColorGame.tsx    # 컬러 게임
 ├── package.json             # 프로젝트 설정 및 의존성
+├── next.config.js           # Next.js 설정
 ├── tsconfig.json            # TypeScript 설정
-├── vite.config.ts           # Vite 빌드 설정
 └── setup.bat                # 자동 설정 스크립트
 ```
 
@@ -99,11 +102,10 @@ Interactive Pinball Game/
 - 경로 별칭 (`@/*` → `./src/*`) 설정
 - 엄격한 타입 검사 활성화
 
-### vite.config.ts
-- Vite 빌드 도구 설정
-- React 플러그인 설정
-- 개발 서버 포트: 3000
-- 경로 별칭 설정
+### next.config.js
+- Next.js 프레임워크 설정
+- React Strict Mode 활성화
+- 이미지 최적화 설정
 
 ### package.json
 - 프로젝트 메타데이터
@@ -133,7 +135,8 @@ Interactive Pinball Game/
    - 또는 `npm install --legacy-peer-deps` 시도
 
 ### 포트 3000이 이미 사용 중
-- `vite.config.ts` 파일에서 `port: 3000`을 다른 번호로 변경
+- `next dev -p 3001` 명령어로 다른 포트에서 실행
+- 또는 환경 변수 `PORT=3001 npm run dev` 사용
 
 ### TypeScript 오류
 - `npm install` 후 VS Code나 에디터 재시작
@@ -146,7 +149,7 @@ Interactive Pinball Game/
 ## 📝 추가 정보
 
 - 원본 Figma 디자인: https://www.figma.com/design/LUCwnFeL4DX5nvSRT04g8v/Interactive-Pinball-Game
-- Vite 문서: https://vitejs.dev/
+- Next.js 문서: https://nextjs.org/docs
 - React 문서: https://react.dev/
 - Tailwind CSS 문서: https://tailwindcss.com/
 

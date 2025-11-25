@@ -9,13 +9,13 @@
 - ✅ `.eslintrc.json` 추가
 
 ### 2. 프로젝트 구조 변경
-- ✅ `app/` 디렉토리 생성 (App Router)
-- ✅ `app/layout.tsx` - 루트 레이아웃 (메타데이터 포함)
-- ✅ `app/page.tsx` - 홈페이지
-- ✅ `app/plinko/page.tsx` - 플링코 게임 페이지
-- ✅ `app/race/page.tsx` - 레이스 게임 페이지
-- ✅ `app/survival/page.tsx` - 서바이벌 게임 페이지
-- ✅ `app/color/page.tsx` - 컬러 게임 페이지
+- ✅ `src/app/` 디렉토리 생성 (App Router)
+- ✅ `src/app/layout.tsx` - 루트 레이아웃 (메타데이터 포함)
+- ✅ `src/app/page.tsx` - 홈페이지
+- ✅ `src/app/plinko/page.tsx` - 플링코 게임 페이지
+- ✅ `src/app/race/page.tsx` - 레이스 게임 페이지
+- ✅ `src/app/survival/page.tsx` - 서바이벌 게임 페이지
+- ✅ `src/app/color/page.tsx` - 컬러 게임 페이지
 
 ### 3. SEO 최적화
 - ✅ 각 페이지별 메타데이터 추가
@@ -57,28 +57,28 @@ npm start
 
 ```
 Interactive Pinball Game/
-├── app/                    # Next.js App Router
-│   ├── layout.tsx         # 루트 레이아웃 (메타데이터)
-│   ├── page.tsx           # 홈페이지 (/)
-│   ├── plinko/
-│   │   ├── page.tsx       # 플링코 페이지 (/plinko)
-│   │   └── client.tsx     # 클라이언트 컴포넌트
-│   ├── race/
-│   │   ├── page.tsx       # 레이스 페이지 (/race)
-│   │   └── client.tsx
-│   ├── survival/
-│   │   ├── page.tsx       # 서바이벌 페이지 (/survival)
-│   │   └── client.tsx
-│   └── color/
-│       ├── page.tsx       # 컬러 페이지 (/color)
-│       └── client.tsx
-├── src/                    # 기존 소스 코드 (그대로 유지)
-│   ├── components/        # 모든 컴포넌트 그대로 유지
-│   ├── pages/            # 모든 게임 페이지 그대로 유지
+├── src/
+│   ├── app/               # Next.js App Router
+│   │   ├── layout.tsx     # 루트 레이아웃 (메타데이터)
+│   │   ├── page.tsx       # 홈페이지 (/)
+│   │   ├── plinko/
+│   │   │   ├── page.tsx   # 플링코 페이지 (/plinko)
+│   │   │   └── client.tsx # 클라이언트 컴포넌트
+│   │   ├── race/
+│   │   │   ├── page.tsx   # 레이스 페이지 (/race)
+│   │   │   └── client.tsx
+│   │   ├── survival/
+│   │   │   ├── page.tsx   # 서바이벌 페이지 (/survival)
+│   │   │   └── client.tsx
+│   │   └── color/
+│   │       ├── page.tsx   # 컬러 페이지 (/color)
+│   │       └── client.tsx
+│   ├── components/        # 재사용 가능한 컴포넌트
+│   ├── pages/             # 게임 페이지 컴포넌트들
 │   └── ...
 ├── next.config.js         # Next.js 설정
-├── tailwind.config.ts    # Tailwind 설정
-└── package.json          # 업데이트됨
+├── tailwind.config.ts     # Tailwind 설정
+└── package.json           # 업데이트됨
 ```
 
 ## ✨ 주요 변경사항
