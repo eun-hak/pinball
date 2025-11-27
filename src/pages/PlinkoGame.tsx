@@ -96,8 +96,8 @@ export function PlinkoGame() {
     
     // 화면 너비에 맞춰 계산 (최소 320px, 최대 800px)
     const canvasWidth = Math.max(minWidth, Math.min(800, containerWidth - padding));
-    // 비율 유지 (800:900 = 8:9)
-    const canvasHeight = (canvasWidth / 8) * 9;
+    // 모바일에서는 세로로 길게 (비율 8:12로 변경하여 더 길게)
+    const canvasHeight = (canvasWidth / 8) * 12;
     
     return { width: canvasWidth, height: canvasHeight };
   }, [windowSize.width]);
@@ -400,10 +400,12 @@ export function PlinkoGame() {
     };
   }, [canvasSize, getActualSize]);
 
+  const isMobile = windowSize.width < 1024;
+  
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 md:p-8 gap-4 sm:gap-6">
+    <div className={`flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 md:p-8 gap-4 sm:gap-6 ${isMobile ? 'pt-2' : ''}`}>
       {/* 헤더 - 모바일 반응형 */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full max-w-4xl gap-4">
+      <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between w-full max-w-4xl gap-4 ${isMobile ? 'mb-2' : ''}`}>
         <div className="text-white">
           <h2 className="text-xl sm:text-2xl mb-2">🎯 플링코 게임</h2>
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
@@ -443,7 +445,7 @@ export function PlinkoGame() {
       {/* Canvas 컨테이너 - 반응형 */}
       <div 
         ref={containerRef}
-        className="relative w-full max-w-[800px] flex justify-center"
+        className={`relative w-full max-w-[800px] flex justify-center ${isMobile ? 'flex-1 min-h-0' : ''}`}
       >
         <canvas
           ref={canvasRef}

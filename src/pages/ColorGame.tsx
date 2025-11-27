@@ -54,7 +54,7 @@ export function ColorGame() {
   const CANVAS_SIZE = 800;
   const GRID_SIZE = 40; // 40x40 grid = 1600 tiles
   const TILE_SIZE = CANVAS_SIZE / GRID_SIZE;
-  const GAME_DURATION = 60;
+  const GAME_DURATION = 10;
 
   const initializeGame = () => {
     // Initialize Grid
@@ -419,9 +419,9 @@ export function ColorGame() {
 
       {/* Main Canvas - PC: 항상 보임, Mobile: 게임 시작 후에만 보임 */}
       <div className={`flex-1 flex flex-col items-center justify-center bg-gray-950/50 rounded-xl border border-gray-800 shadow-2xl p-4 ${isPlaying ? 'flex' : 'hidden md:flex'}`}>
-        {/* Mobile: 게임 중 뒤로가기 버튼 */}
+        {/* Mobile: 게임 중 상단 바 (뒤로가기 + 시간) */}
         {isPlaying && (
-          <div className="w-full flex justify-start mb-3 md:hidden">
+          <div className="w-full flex justify-between items-center mb-3 md:hidden">
             <Button
               onClick={resetGame}
               variant="ghost"
@@ -431,6 +431,12 @@ export function ColorGame() {
               <ArrowLeft className="size-4 mr-2" />
               설정으로
             </Button>
+            {/* 모바일 시간 표시 */}
+            <div className="bg-gray-900/90 backdrop-blur-md border border-gray-700 rounded-lg px-4 py-2">
+              <div className="text-2xl font-mono text-white font-bold">
+                {timeLeft.toFixed(1)}s
+              </div>
+            </div>
           </div>
         )}
         
