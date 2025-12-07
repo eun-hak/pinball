@@ -10,6 +10,18 @@ const nextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
   },
+  webpack: (config, { isServer }) => {
+    // box2d-wasm이 Node.js 모듈을 참조하지 않도록 설정
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        crypto: false,
+      };
+    }
+    return config;
+  },
 }
 
 module.exports = nextConfig

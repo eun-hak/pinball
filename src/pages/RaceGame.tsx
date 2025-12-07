@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Play, RotateCcw, Plus, X, Trophy, ArrowLeft } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
+import { useIsMobile } from "../components/ui/use-mobile";
 
 interface RaceBall {
   id: number;
@@ -46,6 +47,7 @@ const COLORS = [
 ];
 
 export function RaceGame() {
+  const isMobile = useIsMobile();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const ballsRef = useRef<RaceBall[]>([]);
@@ -59,9 +61,28 @@ export function RaceGame() {
   const animationRef = useRef<number>();
   const isPlayingRef = useRef(false);
   const timeRef = useRef(0);
-
+  
   const CANVAS_WIDTH = 1000;
   const CANVAS_HEIGHT = 4000;
+  
+  // 카메라 시스템 (roulette-main 방식 - Canvas 변환)
+  const cameraRef = useRef<{
+    x: number;
+    y: number;
+    targetX: number;
+    targetY: number;
+    zoom: number;
+    targetZoom: number;
+    shouldFollow: boolean;
+  }>({
+    x: CANVAS_WIDTH / 2,
+    y: 0,
+    targetX: CANVAS_WIDTH / 2,
+    targetY: 0,
+    zoom: 1,
+    targetZoom: 1, // 게임 시작 전에는 확대하지 않음
+    shouldFollow: false,
+  });
   const TRACK_WIDTH = 800; // Increased track width
   const BALL_RADIUS = 22; // Increased ball size
   const GRAVITY = 0.5;
@@ -194,8 +215,18 @@ export function RaceGame() {
     const spacing = Math.min(60, availableWidth / players.length);
     const startX = centerX - ((players.length - 1) * spacing) / 2;
 
-    // Scroll to top
-    containerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    // 카메라 초기화 (Canvas 변환 방식)
+    // 게임 시작 시에는 확대하지 않음 (모바일: 0.3, PC: 1)
+    const mobileZoom = 0.3;
+    const startZoom = isMobile ? mobileZoom : 1;
+    
+    cameraRef.current.x = CANVAS_WIDTH / 2;
+    cameraRef.current.y = 150;
+    cameraRef.current.targetX = CANVAS_WIDTH / 2;
+    cameraRef.current.targetY = 150;
+    cameraRef.current.zoom = startZoom;
+    cameraRef.current.targetZoom = startZoom; // 게임 시작 시 확대하지 않음
+    cameraRef.current.shouldFollow = true;
 
     ballsRef.current = players.map((name, i) => ({
       id: i,
@@ -216,6 +247,15 @@ export function RaceGame() {
     ballsRef.current = [];
     setRankings([]);
     timeRef.current = 0;
+    cameraRef.current.shouldFollow = false;
+    cameraRef.current.x = CANVAS_WIDTH / 2;
+    cameraRef.current.y = 0;
+    cameraRef.current.targetX = CANVAS_WIDTH / 2;
+    cameraRef.current.targetY = 0;
+    // 모바일에서는 전체 맵이 보이도록 작게, PC에서는 기본 크기
+    const resetZoom = isMobile ? 0.3 : 1;
+    cameraRef.current.zoom = resetZoom;
+    cameraRef.current.targetZoom = resetZoom;
   };
 
   useEffect(() => {
@@ -225,14 +265,81 @@ export function RaceGame() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // Canvas 크기를 컨테이너에 맞춤
+    const resizeCanvas = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+      }
+    };
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
     const animate = () => {
       if (isPlayingRef.current) {
         timeRef.current += 1 / 60;
       }
 
-      // Main canvas
+      // Canvas 크기 재조정
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        if (canvas.width !== rect.width || canvas.height !== rect.height) {
+          canvas.width = rect.width;
+          canvas.height = rect.height;
+        }
+      }
+
+      // 카메라 업데이트: 선두 구슬 찾기 및 포커스 (Canvas 변환 방식)
+      const cam = cameraRef.current;
+      
+      // 모바일과 PC의 zoom 설정
+      const mobileZoom = 0.3; // 모바일: 전체 맵이 보이도록 더 작게
+      
+      // 게임 시작 전에는 확대하지 않음
+      if (!cam.shouldFollow) {
+        cam.targetZoom = isMobile ? mobileZoom : 1;
+      } else {
+        // 게임 중에도 모바일에서는 작게, PC에서는 기본 크기 유지 (확대하지 않음)
+        cam.targetZoom = isMobile ? mobileZoom : 1;
+      }
+      
+      if (cam.shouldFollow && ballsRef.current.length > 0) {
+        const activeBalls = ballsRef.current.filter((ball) => !ball.finished);
+        if (activeBalls.length > 0) {
+          // 선두 구슬 찾기 (Y값이 가장 큰 구슬 = 가장 아래로 가는 구슬 = 가장 앞서있는 구슬)
+          const leadingBall = activeBalls.reduce((prev, current) => 
+            current.y > prev.y ? current : prev
+          );
+          
+          // 카메라가 선두 구슬을 화면 중앙에 오도록 타겟 설정
+          cam.targetX = leadingBall.x;
+          cam.targetY = leadingBall.y;
+        }
+      }
+
+      // 카메라 부드러운 보간 (roulette-main 참고)
+      const interp = (current: number, target: number) => {
+        const d = target - current;
+        if (Math.abs(d) < 0.01) return target;
+        return current + d / 10;
+      };
+      
+      cam.x = interp(cam.x, cam.targetX);
+      cam.y = interp(cam.y, cam.targetY);
+      cam.zoom = interp(cam.zoom, cam.targetZoom);
+
+      // Canvas 변환 적용 (뷰포트 고정, 확대, 포커스)
+      ctx.save();
       ctx.fillStyle = "#0a0a0a";
-      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // 카메라 변환: 화면 중앙에 구슬이 오도록
+      const viewWidth = canvas.width;
+      const viewHeight = canvas.height;
+      ctx.translate(viewWidth / 2, viewHeight / 2);
+      ctx.scale(cam.zoom, cam.zoom);
+      ctx.translate(-cam.x, -cam.y);
 
       // Track boundaries
       const centerX = CANVAS_WIDTH / 2;
@@ -544,6 +651,9 @@ export function RaceGame() {
         ctx.restore();
       });
 
+      // Canvas 변환 해제
+      ctx.restore();
+
       animationRef.current = requestAnimationFrame(animate);
     };
 
@@ -553,6 +663,7 @@ export function RaceGame() {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
+      window.removeEventListener("resize", resizeCanvas);
     };
   }, []);
 
@@ -684,7 +795,7 @@ export function RaceGame() {
       {/* Main Canvas Container - PC: 항상 보임, Mobile: 게임 시작 후에만 보임 */}
       <div
         ref={containerRef}
-        className={`flex-1 h-full overflow-y-auto rounded-xl bg-gray-950/50 border border-gray-800 shadow-2xl relative scroll-smooth ${
+        className={`flex-1 h-full overflow-hidden rounded-xl bg-gray-950/50 border border-gray-800 shadow-2xl relative ${
           isPlaying ? "" : "hidden md:flex"
         }`}
       >
@@ -703,18 +814,12 @@ export function RaceGame() {
           </div>
         )}
 
-        <div
-          className={`min-h-full flex justify-center p-4 md:p-8 ${
-            !isPlaying && ballsRef.current.length === 0 ? "items-center" : ""
-          }`}
-        >
+        <div className="w-full h-full flex items-center justify-center">
           <canvas
             ref={canvasRef}
-            width={CANVAS_WIDTH}
-            height={CANVAS_HEIGHT}
-            className="bg-gray-900 rounded-lg shadow-2xl w-full max-w-full md:max-w-[1400px]"
+            className="bg-gray-900 rounded-lg shadow-2xl w-full h-full"
             style={{
-              height: "auto",
+              display: "block",
             }}
           />
 
