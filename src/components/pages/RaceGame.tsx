@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Play, RotateCcw, Plus, X, Trophy, ArrowLeft } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { useIsMobile } from "../components/ui/use-mobile";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { useIsMobile } from "../ui/use-mobile";
 
 interface RaceBall {
   id: number;

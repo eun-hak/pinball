@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Play, RotateCcw } from 'lucide-react';
-import { Button } from '../components/ui/button';
+import { Button } from '../ui/button';
 
 interface Ball {
   id: number;

@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Play, RotateCcw, Plus, X, Trophy, Skull, Bomb, ArrowLeft } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
 
 interface Player {
   id: number;
