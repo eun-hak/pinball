@@ -1,7 +1,7 @@
 'use client'
 
 import { Navigation } from '@/components/Navigation'
-import { RaceGame } from '@/pages/RaceGame'
+import { RaceGame } from '@/components/pages/RaceGame'
 import { useRouter } from 'next/navigation'
 
 export default function RacePage() {

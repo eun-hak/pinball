@@ -1,7 +1,7 @@
 'use client'
 
 import { Navigation } from '@/components/Navigation'
-import { PlinkoGame } from '@/pages/PlinkoGame'
+import { PlinkoGame } from '@/components/pages/PlinkoGame'
 import { useRouter } from 'next/navigation'
 
 export default function PlinkoPage() {

@@ -1,7 +1,7 @@
 'use client'
 
 import { Navigation } from '@/components/Navigation'
-import { Home } from '@/pages/Home'
+import { Home } from '@/components/pages/Home'
 import { useRouter } from 'next/navigation'
 
 export default function HomePage() {
@@ -12,7 +12,8 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
+    <>
+      {/* <div className="min-h-screen bg-black"> */}
       <Navigation currentGame="home" onGameChange={(game) => {
         if (game === 'home') {
           router.push('/')
@@ -21,7 +22,8 @@ export default function HomePage() {
         }
       }} />
       <Home onGameSelect={handleGameSelect} />
-    </div>
+      {/* </div> */}
+    </>
   )
 }
 

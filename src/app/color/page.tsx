@@ -1,7 +1,7 @@
 'use client'
 
 import { Navigation } from '@/components/Navigation'
-import { ColorGame } from '@/pages/ColorGame'
+import { ColorGame } from '@/components/pages/ColorGame'
 import { useRouter } from 'next/navigation'
 
 export default function ColorPage() {

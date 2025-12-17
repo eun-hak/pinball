@@ -109,10 +109,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
+
     <html lang="ko" className="bg-black">
-      <head>
-        <link rel="canonical" href={siteUrl} />
-      </head>
       <body className="antialiased bg-black">
         {children}
         {/* Structured Data for SEO */}

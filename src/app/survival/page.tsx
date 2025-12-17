@@ -1,7 +1,7 @@
 'use client'
 
 import { Navigation } from '@/components/Navigation'
-import { SurvivalGame } from '@/pages/SurvivalGame'
+import { SurvivalGame } from '@/components/pages/SurvivalGame'
 import { useRouter } from 'next/navigation'
 
 export default function SurvivalPage() {

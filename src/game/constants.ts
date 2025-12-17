@@ -1,5 +1,8 @@
 import { ColorTheme } from './types/ColorTheme';
 
+// ColorTheme를 re-export하여 다른 파일에서 constants에서 import할 수 있도록 함
+export type { ColorTheme };
+
 export const initialZoom = 30;
 export const canvasWidth = 1600;
 export const canvasHeight = 900;

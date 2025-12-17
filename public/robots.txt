@@ -1,21 +1,3 @@
-# *
+# 모든 검색 엔진 크롤러 차단
 User-agent: *
-Allow: /
-
-# Sitemaps
-Sitemap: https://spinsnap-arcade.com/sitemap.xml
-
-# Disallow sensitive paths (if any in future)
-# Disallow: /api/
-# Disallow: /admin/
-
-# Crawl-delay for aggressive bots (optional)
-User-agent: Yandex
-Crawl-delay: 2
-
-User-agent: AhrefsBot
-Crawl-delay: 5
-
-User-agent: SemrushBot
-Crawl-delay: 5
-
+Disallow: /
