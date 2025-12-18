@@ -32,7 +32,7 @@ interface Shockwave {
 }
 
 const COLORS = [
-  '#FF0055', '#00FF99', '#00CCFF', '#FFCC00', 
+  '#FF0055', '#00FF99', '#00CCFF', '#FFCC00',
   '#CC00FF', '#FF6600', '#00FF00', '#0066FF'
 ];
 
@@ -41,7 +41,7 @@ export function ColorGame() {
   const [players, setPlayers] = useState<string[]>(['레드팀', '그린팀', '블루팀', '옐로팀']);
   const [newPlayer, setNewPlayer] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(60);
+  const [timeLeft, setTimeLeft] = useState(10);
   const [winner, setWinner] = useState<Player | null>(null);
 
   const isPlayingRef = useRef(false);
@@ -50,7 +50,7 @@ export function ColorGame() {
   const gridRef = useRef<number[]>([]); // Flat array for grid colors (playerId or -1)
   const shockwavesRef = useRef<Shockwave[]>([]);
   const animationRef = useRef<number>();
-  
+
   const CANVAS_SIZE = 800;
   const GRID_SIZE = 40; // 40x40 grid = 1600 tiles
   const TILE_SIZE = CANVAS_SIZE / GRID_SIZE;
@@ -104,14 +104,29 @@ export function ColorGame() {
     initializeGame();
   };
 
-  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleCanvasInteraction = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     if (!isPlaying) return;
-    
+
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
-    
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+
+    let clientX, clientY;
+    if ('touches' in e) {
+      // Prevents scrolling while interacting with the game
+      if (e.cancelable) e.preventDefault();
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+
+    // Map screen coordinates to internal canvas coordinates
+    const scaleX = CANVAS_SIZE / rect.width;
+    const scaleY = CANVAS_SIZE / rect.height;
+
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
 
     // Add visual shockwave
     shockwavesRef.current.push({
@@ -127,7 +142,7 @@ export function ColorGame() {
       const dx = ball.x - x;
       const dy = ball.y - y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      
+
       if (dist < 150) {
         const angle = Math.atan2(dy, dx);
         const force = (150 - dist) / 5; // Stronger force closer to click
@@ -143,9 +158,22 @@ export function ColorGame() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
+
+    // Canvas 실제 해상도 설정 (고화질 대응)
+    canvas.width = CANVAS_SIZE * dpr;
+    canvas.height = CANVAS_SIZE * dpr;
+
+    // CSS 크기는 논리적 크기로 유지
+    canvas.style.width = `${CANVAS_SIZE}px`;
+    canvas.style.height = `${CANVAS_SIZE}px`;
+
     let lastTime = Date.now();
 
     const animate = () => {
+      ctx.save();
+      ctx.scale(dpr, dpr);
+
       const now = Date.now();
       const dt = (now - lastTime) / 1000;
       lastTime = now;
@@ -169,7 +197,7 @@ export function ColorGame() {
           // Move
           ball.x += ball.vx;
           ball.y += ball.vy;
-          
+
           // Friction (Balls slow down to encourage clicking)
           ball.vx *= 0.98;
           ball.vy *= 0.98;
@@ -183,13 +211,13 @@ export function ColorGame() {
           // Paint Grid
           const gridX = Math.floor(ball.x / TILE_SIZE);
           const gridY = Math.floor(ball.y / TILE_SIZE);
-          
+
           // Paint 3x3 area around ball
           for (let dx = -1; dx <= 1; dx++) {
             for (let dy = -1; dy <= 1; dy++) {
               const tx = gridX + dx;
               const ty = gridY + dy;
-              
+
               if (tx >= 0 && tx < GRID_SIZE && ty >= 0 && ty < GRID_SIZE) {
                 const idx = ty * GRID_SIZE + tx;
                 // Only repaint if it's not already own color
@@ -219,30 +247,30 @@ export function ColorGame() {
         // Ball Collisions
         for (let i = 0; i < ballsRef.current.length; i++) {
           for (let j = i + 1; j < ballsRef.current.length; j++) {
-             const b1 = ballsRef.current[i];
-             const b2 = ballsRef.current[j];
-             const dx = b2.x - b1.x;
-             const dy = b2.y - b1.y;
-             const dist = Math.sqrt(dx*dx + dy*dy);
-             
-             if (dist < b1.radius + b2.radius) {
-               // Simple elastic collision
-               const angle = Math.atan2(dy, dx);
-               const speed1 = Math.sqrt(b1.vx*b1.vx + b1.vy*b1.vy);
-               const speed2 = Math.sqrt(b2.vx*b2.vx + b2.vy*b2.vy);
-               
-               b1.vx = -Math.cos(angle) * speed2 * 0.8;
-               b1.vy = -Math.sin(angle) * speed2 * 0.8;
-               b2.vx = Math.cos(angle) * speed1 * 0.8;
-               b2.vy = Math.sin(angle) * speed1 * 0.8;
-               
-               // Push apart
-               const overlap = (b1.radius + b2.radius - dist) / 2;
-               b1.x -= Math.cos(angle) * overlap;
-               b1.y -= Math.sin(angle) * overlap;
-               b2.x += Math.cos(angle) * overlap;
-               b2.y += Math.sin(angle) * overlap;
-             }
+            const b1 = ballsRef.current[i];
+            const b2 = ballsRef.current[j];
+            const dx = b2.x - b1.x;
+            const dy = b2.y - b1.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < b1.radius + b2.radius) {
+              // Simple elastic collision
+              const angle = Math.atan2(dy, dx);
+              const speed1 = Math.sqrt(b1.vx * b1.vx + b1.vy * b1.vy);
+              const speed2 = Math.sqrt(b2.vx * b2.vx + b2.vy * b2.vy);
+
+              b1.vx = -Math.cos(angle) * speed2 * 0.8;
+              b1.vy = -Math.sin(angle) * speed2 * 0.8;
+              b2.vx = Math.cos(angle) * speed1 * 0.8;
+              b2.vy = Math.sin(angle) * speed1 * 0.8;
+
+              // Push apart
+              const overlap = (b1.radius + b2.radius - dist) / 2;
+              b1.x -= Math.cos(angle) * overlap;
+              b1.y -= Math.sin(angle) * overlap;
+              b2.x += Math.cos(angle) * overlap;
+              b2.y += Math.sin(angle) * overlap;
+            }
           }
         }
       }
@@ -251,7 +279,7 @@ export function ColorGame() {
       // 1. Draw Grid
       ctx.fillStyle = '#111';
       ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-      
+
       gridRef.current.forEach((pid, i) => {
         if (pid !== -1) {
           const x = (i % GRID_SIZE) * TILE_SIZE;
@@ -283,10 +311,10 @@ export function ColorGame() {
         sw.radius += 5;
         sw.alpha -= 0.05;
         if (sw.alpha <= 0) {
-           shockwavesRef.current.splice(i, 1);
-           return;
+          shockwavesRef.current.splice(i, 1);
+          return;
         }
-        
+
         ctx.beginPath();
         ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
         ctx.strokeStyle = `rgba(255, 255, 255, ${sw.alpha})`;
@@ -298,10 +326,10 @@ export function ColorGame() {
       ballsRef.current.forEach(ball => {
         ctx.save();
         ctx.translate(ball.x, ball.y);
-        
+
         ctx.shadowBlur = 10;
         ctx.shadowColor = ball.color;
-        
+
         ctx.beginPath();
         ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
         ctx.fillStyle = ball.color;
@@ -309,10 +337,11 @@ export function ColorGame() {
         ctx.strokeStyle = '#fff';
         ctx.lineWidth = 2;
         ctx.stroke();
-        
+
         ctx.restore();
       });
 
+      ctx.restore();
       animationRef.current = requestAnimationFrame(animate);
     };
 
@@ -332,7 +361,7 @@ export function ColorGame() {
         <div className="bg-gray-900/80 backdrop-blur-md border border-gray-800 rounded-xl p-6 shadow-lg">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-bold text-white flex items-center gap-2">
-              <Palette className="size-5 text-pink-500" /> 
+              <Palette className="size-5 text-pink-500" />
               Color Conquest
             </h3>
             <div className="text-2xl font-mono text-white">
@@ -347,14 +376,14 @@ export function ColorGame() {
                 className="bg-gray-800/50 px-4 py-3 rounded-lg border border-gray-700/50 relative overflow-hidden"
               >
                 {/* Progress Bar Background */}
-                <div 
+                <div
                   className="absolute left-0 top-0 bottom-0 opacity-20 transition-all duration-300"
-                  style={{ 
+                  style={{
                     width: `${player.percent}%`,
-                    backgroundColor: player.color 
+                    backgroundColor: player.color
                   }}
                 />
-                
+
                 <div className="relative flex justify-between items-center z-10">
                   <div className="flex items-center gap-3">
                     <div
@@ -407,7 +436,7 @@ export function ColorGame() {
             </p>
           </div>
         )}
-        
+
         <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4 text-sm text-gray-400">
           <div className="flex items-center gap-2 mb-2 text-white font-bold">
             <Zap className="size-4 text-yellow-500" /> 게임 팁
@@ -439,15 +468,16 @@ export function ColorGame() {
             </div>
           </div>
         )}
-        
+
         <canvas
           ref={canvasRef}
           width={CANVAS_SIZE}
           height={CANVAS_SIZE}
-          onClick={handleCanvasClick}
+          onClick={handleCanvasInteraction}
+          onTouchStart={handleCanvasInteraction}
           className="rounded-lg shadow-[0_0_30px_rgba(0,0,0,0.5)] bg-black cursor-pointer hover:shadow-[0_0_40px_rgba(255,255,255,0.1)] transition-shadow"
-          style={{ 
-            maxWidth: '100%', 
+          style={{
+            maxWidth: '100%',
             maxHeight: '85vh',
             aspectRatio: '1/1'
           }}

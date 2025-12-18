@@ -162,7 +162,20 @@ export function PinballGame() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
+    
+    // Canvas 실제 해상도 설정 (고화질 대응)
+    canvas.width = CANVAS_WIDTH * dpr;
+    canvas.height = CANVAS_HEIGHT * dpr;
+    
+    // CSS 크기는 논리적 크기로 유지
+    canvas.style.width = `${CANVAS_WIDTH}px`;
+    canvas.style.height = `${CANVAS_HEIGHT}px`;
+
     const animate = () => {
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      
       ctx.fillStyle = '#0a0a0a';
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
@@ -332,6 +345,7 @@ export function PinballGame() {
         ctx.restore();
       });
 
+      ctx.restore();
       animationRef.current = requestAnimationFrame(animate);
     };
 

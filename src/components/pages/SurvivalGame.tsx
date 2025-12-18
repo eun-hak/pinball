@@ -38,19 +38,19 @@ interface Explosion {
 }
 
 const COLORS = [
-  '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
-  '#FFEAA7', '#A29BFE', '#FD79A8', '#6C5CE7', 
+  '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
+  '#FFEAA7', '#A29BFE', '#FD79A8', '#6C5CE7',
   '#00B894', '#FDCB6E', '#E17055', '#FF85A2'
 ];
 
 export function SurvivalGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [players, setPlayers] = useState<string[]>(['철수', '영희', '맹구', '훈이']);
+  const [players, setPlayers] = useState<string[]>(['1번', '2번', '3번', '4번']);
   const [newPlayer, setNewPlayer] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
   const [winner, setWinner] = useState<Player | null>(null);
   const [gameTime, setGameTime] = useState(0);
-  
+
   const isPlayingRef = useRef(false);
   const playersRef = useRef<Player[]>([]);
   const ballsRef = useRef<GameBall[]>([]);
@@ -75,17 +75,17 @@ export function SurvivalGame() {
       color: COLORS[i % COLORS.length],
       alive: true
     }));
-    
+
     playersRef.current = loadedPlayers;
-    
+
     // Spawn balls in a circle
     const radius = 200;
     const angleStep = (Math.PI * 2) / players.length;
-    
+
     ballsRef.current = loadedPlayers.map((p, i) => ({
       playerId: p.id,
-      x: CANVAS_SIZE/2 + Math.cos(angleStep * i) * radius,
-      y: CANVAS_SIZE/2 + Math.sin(angleStep * i) * radius,
+      x: CANVAS_SIZE / 2 + Math.cos(angleStep * i) * radius,
+      y: CANVAS_SIZE / 2 + Math.sin(angleStep * i) * radius,
       vx: 0,
       vy: 0,
       radius: BALL_RADIUS,
@@ -129,9 +129,22 @@ export function SurvivalGame() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
+
+    // Canvas 실제 해상도 설정 (고화질 대응)
+    canvas.width = CANVAS_SIZE * dpr;
+    canvas.height = CANVAS_SIZE * dpr;
+
+    // CSS 크기는 논리적 크기로 유지
+    canvas.style.width = `${CANVAS_SIZE}px`;
+    canvas.style.height = `${CANVAS_SIZE}px`;
+
     const animate = () => {
+      ctx.save();
+      ctx.scale(dpr, dpr);
+
       if (isPlayingRef.current) {
-        const dt = 1/60;
+        const dt = 1 / 60;
         timeRef.current += dt;
         setGameTime(timeRef.current);
 
@@ -143,16 +156,16 @@ export function SurvivalGame() {
         // 2. Spawn Bombs
         if (timeRef.current > nextBombTimeRef.current) {
           // Difficulty curve: Bombs spawn faster over time
-          const interval = Math.max(0.5, 2 - timeRef.current * 0.05); 
+          const interval = Math.max(0.5, 2 - timeRef.current * 0.05);
           nextBombTimeRef.current = timeRef.current + interval;
 
           const angle = Math.random() * Math.PI * 2;
           const r = Math.sqrt(Math.random()) * (safeRadiusRef.current - 50); // Within safe zone mostly
-          
+
           explosionsRef.current.push({
             id: Math.random(),
-            x: CANVAS_SIZE/2 + Math.cos(angle) * r,
-            y: CANVAS_SIZE/2 + Math.sin(angle) * r,
+            x: CANVAS_SIZE / 2 + Math.cos(angle) * r,
+            y: CANVAS_SIZE / 2 + Math.sin(angle) * r,
             radius: 0,
             maxRadius: 80 + Math.random() * 40, // Random size
             force: 15 + Math.random() * 10,
@@ -168,20 +181,20 @@ export function SurvivalGame() {
             if (exp.life >= 1) {
               exp.type = 'boom';
               exp.life = 1.0; // Reset for boom decay
-              
+
               // Apply force to balls immediately on boom
               ballsRef.current.forEach(ball => {
                 const dx = ball.x - exp.x;
                 const dy = ball.y - exp.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                
+
                 if (dist < exp.maxRadius + ball.radius + 50) {
-                   const angle = Math.atan2(dy, dx);
-                   const force = exp.force * (1 - dist / (exp.maxRadius + 100)); // Falloff
-                   if (force > 0) {
-                     ball.vx += Math.cos(angle) * force;
-                     ball.vy += Math.sin(angle) * force;
-                   }
+                  const angle = Math.atan2(dy, dx);
+                  const force = exp.force * (1 - dist / (exp.maxRadius + 100)); // Falloff
+                  if (force > 0) {
+                    ball.vx += Math.cos(angle) * force;
+                    ball.vy += Math.sin(angle) * force;
+                  }
                 }
               });
             }
@@ -199,7 +212,7 @@ export function SurvivalGame() {
           for (let j = i + 1; j < ballsRef.current.length; j++) {
             const b1 = ballsRef.current[i];
             const b2 = ballsRef.current[j];
-            
+
             // Skip if either is dead (far away) - actually we remove them but let's be safe
             const dx = b2.x - b1.x;
             const dy = b2.y - b1.y;
@@ -210,12 +223,12 @@ export function SurvivalGame() {
               const angle = Math.atan2(dy, dx);
               const tx = Math.cos(angle) * minDist;
               const ty = Math.sin(angle) * minDist;
-              
+
               // Separate
               const overlap = minDist - dist;
               const ax = Math.cos(angle) * overlap * 0.5;
               const ay = Math.sin(angle) * overlap * 0.5;
-              
+
               b1.x -= ax;
               b1.y -= ay;
               b2.x += ax;
@@ -224,7 +237,7 @@ export function SurvivalGame() {
               // Bounce (Elastic)
               const nx = Math.cos(angle);
               const ny = Math.sin(angle);
-              
+
               // Dot product velocity along normal
               const dvx = b2.vx - b1.vx;
               const dvy = b2.vy - b1.vy;
@@ -250,17 +263,17 @@ export function SurvivalGame() {
 
           // Check Death
           const distFromCenter = Math.sqrt(
-            Math.pow(ball.x - CANVAS_SIZE/2, 2) + 
-            Math.pow(ball.y - CANVAS_SIZE/2, 2)
+            Math.pow(ball.x - CANVAS_SIZE / 2, 2) +
+            Math.pow(ball.y - CANVAS_SIZE / 2, 2)
           );
 
           if (distFromCenter > safeRadiusRef.current + ball.radius) {
-             // Player died
-             const player = playersRef.current.find(p => p.id === ball.playerId);
-             if (player && player.alive) {
-               player.alive = false;
-               player.deathTime = timeRef.current;
-             }
+            // Player died
+            const player = playersRef.current.find(p => p.id === ball.playerId);
+            if (player && player.alive) {
+              player.alive = false;
+              player.deathTime = timeRef.current;
+            }
           }
         });
 
@@ -271,22 +284,22 @@ export function SurvivalGame() {
         // Check Winner
         const alivePlayers = playersRef.current.filter(p => p.alive);
         if (alivePlayers.length <= 1 && players.length > 1 && !winner) {
-           if (alivePlayers.length === 1) {
-             setWinner(alivePlayers[0]);
-             setIsPlaying(false);
-             isPlayingRef.current = false;
-           } else if (alivePlayers.length === 0 && !winner) {
-             // Everyone died same frame? Tie or last one
-             setIsPlaying(false);
-             isPlayingRef.current = false;
-           }
+          if (alivePlayers.length === 1) {
+            setWinner(alivePlayers[0]);
+            setIsPlaying(false);
+            isPlayingRef.current = false;
+          } else if (alivePlayers.length === 0 && !winner) {
+            // Everyone died same frame? Tie or last one
+            setIsPlaying(false);
+            isPlayingRef.current = false;
+          }
         }
       }
 
       // --- RENDER ---
       ctx.fillStyle = '#111';
       ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-      
+
       const centerX = CANVAS_SIZE / 2;
       const centerY = CANVAS_SIZE / 2;
 
@@ -306,10 +319,10 @@ export function SurvivalGame() {
       ctx.lineWidth = 4;
       ctx.setLineDash([20, 10]);
       // Rotate the border for visual effect
-      ctx.lineDashOffset = -timeRef.current * 20; 
+      ctx.lineDashOffset = -timeRef.current * 20;
       ctx.stroke();
       ctx.setLineDash([]);
-      
+
       // Glow
       ctx.shadowBlur = 20;
       ctx.shadowColor = '#00ffff';
@@ -327,7 +340,7 @@ export function SurvivalGame() {
           ctx.strokeStyle = '#ff3300';
           ctx.lineWidth = 2;
           ctx.stroke();
-          
+
           // Loading timer (growing inner circle)
           ctx.beginPath();
           ctx.arc(exp.x, exp.y, exp.maxRadius * exp.life, 0, Math.PI * 2);
@@ -354,7 +367,7 @@ export function SurvivalGame() {
 
         ctx.save();
         ctx.translate(ball.x, ball.y);
-        
+
         // Body
         ctx.beginPath();
         ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
@@ -367,10 +380,10 @@ export function SurvivalGame() {
         // Face (cute expression)
         ctx.fillStyle = '#fff';
         // Eyes
-        const speed = Math.sqrt(ball.vx*ball.vx + ball.vy*ball.vy);
+        const speed = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy);
         const eyeOffset = Math.min(5, speed); // Eyes move with speed
         const angle = Math.atan2(ball.vy, ball.vx);
-        
+
         const eyeX = Math.cos(angle) * eyeOffset;
         const eyeY = Math.sin(angle) * eyeOffset;
 
@@ -378,7 +391,7 @@ export function SurvivalGame() {
         ctx.arc(-6 + eyeX, -2 + eyeY, 4, 0, Math.PI * 2);
         ctx.arc(6 + eyeX, -2 + eyeY, 4, 0, Math.PI * 2);
         ctx.fill();
-        
+
         // Name
         ctx.font = 'bold 12px Arial';
         ctx.textAlign = 'center';
@@ -388,6 +401,7 @@ export function SurvivalGame() {
         ctx.restore();
       });
 
+      ctx.restore();
       animationRef.current = requestAnimationFrame(animate);
     };
 
@@ -408,7 +422,7 @@ export function SurvivalGame() {
           <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
             💣 서바이벌 참가자
           </h3>
-          
+
           <div className="flex gap-2 mb-4">
             <Input
               value={newPlayer}
@@ -432,15 +446,14 @@ export function SurvivalGame() {
             {players.map((player, i) => {
               const playerData = playersRef.current.find(p => p.name === player);
               const isDead = isPlaying && playerData && !playerData.alive;
-              
+
               return (
                 <div
                   key={i}
-                  className={`flex items-center justify-between px-4 py-2 rounded-lg border transition-all ${
-                    isDead 
-                      ? 'bg-red-900/20 border-red-800 opacity-60' 
-                      : 'bg-gray-800/50 border-gray-700/50'
-                  }`}
+                  className={`flex items-center justify-between px-4 py-2 rounded-lg border transition-all ${isDead
+                    ? 'bg-red-900/20 border-red-800 opacity-60'
+                    : 'bg-gray-800/50 border-gray-700/50'
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     {isDead ? (
@@ -501,7 +514,7 @@ export function SurvivalGame() {
             </p>
           </div>
         )}
-        
+
         <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4 text-sm text-gray-400">
           <div className="flex items-center gap-2 mb-2 text-white font-bold">
             <Bomb className="size-4 text-red-500" /> 게임 규칙
@@ -531,14 +544,14 @@ export function SurvivalGame() {
             </Button>
           </div>
         )}
-        
+
         <canvas
           ref={canvasRef}
           width={CANVAS_SIZE}
           height={CANVAS_SIZE}
           className="rounded-full shadow-[0_0_50px_rgba(0,0,0,0.5)] bg-gray-900"
-          style={{ 
-            maxWidth: '100%', 
+          style={{
+            maxWidth: '100%',
             maxHeight: '85vh',
             aspectRatio: '1/1'
           }}

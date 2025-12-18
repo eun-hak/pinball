@@ -32,7 +32,7 @@ interface Slot {
 }
 
 const COLORS = [
-  '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
+  '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
   '#FFEAA7', '#DFE6E9', '#A29BFE', '#FD79A8',
   '#6C5CE7', '#00B894', '#FDCB6E', '#E17055'
 ];
@@ -73,32 +73,32 @@ export function PlinkoGame() {
   const animationRef = useRef<number>();
   const ballIdRef = useRef(0);
   const isPlayingRef = useRef(false);
-  
+
   const windowSize = useWindowSize();
-  
+
   // 반응형 Canvas 크기 계산
   const getCanvasSize = useCallback(() => {
     if (!containerRef.current) {
       return { width: 800, height: 900 };
     }
-    
+
     const containerWidth = containerRef.current.clientWidth;
     const isMobile = windowSize.width < 1024; // 1024px 미만은 모바일/태블릿
-    
+
     // PC (1024px 이상): 원래 디자인대로 800x900 고정
     if (!isMobile) {
       return { width: 800, height: 900 };
     }
-    
+
     // 모바일/태블릿: 반응형
     const padding = 32; // 좌우 패딩
     const minWidth = 320;
-    
+
     // 화면 너비에 맞춰 계산 (최소 320px, 최대 800px)
     const canvasWidth = Math.max(minWidth, Math.min(800, containerWidth - padding));
     // 모바일에서는 세로로 길게 (비율 8:12로 변경하여 더 길게)
     const canvasHeight = (canvasWidth / 8) * 12;
-    
+
     return { width: canvasWidth, height: canvasHeight };
   }, [windowSize.width]);
 
@@ -128,7 +128,7 @@ export function PlinkoGame() {
 
   const initializeGame = useCallback(() => {
     const { width, height } = canvasSize;
-    
+
     const newPegs: Peg[] = [];
     const startY = getActualSize(150 / BASE_HEIGHT, 'height');
     const rowSpacing = getActualSize(50 / BASE_HEIGHT, 'height');
@@ -202,7 +202,10 @@ export function PlinkoGame() {
     ballsRef.current = [];
     slotsRef.current = slotsRef.current.map(s => ({ ...s, count: 0 }));
     ballIdRef.current = 0;
-    
+
+    // 게임 시작 시 화면을 부드럽게 약간 내려줌
+    window.scrollBy({ top: 150, behavior: 'smooth' });
+
     const interval = setInterval(() => {
       dropBall();
     }, 500);
@@ -234,12 +237,20 @@ export function PlinkoGame() {
     if (!ctx) return;
 
     const { width, height } = canvasSize;
-    
-    // Canvas 실제 크기 설정
-    canvas.width = width;
-    canvas.height = height;
+    const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
+
+    // Canvas 실제 해상도 설정 (고화질 대응)
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+
+    // CSS 크기는 논리적 크기로 유지
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
 
     const animate = () => {
+      ctx.save();
+      ctx.scale(dpr, dpr);
+
       ctx.fillStyle = '#0a0a0a';
       ctx.fillRect(0, 0, width, height);
 
@@ -263,10 +274,10 @@ export function PlinkoGame() {
 
       const slotWidth = width / NUM_SLOTS;
       const slotY = height - getActualSize(100 / BASE_HEIGHT, 'height');
-      
+
       slotsRef.current.forEach((slot, i) => {
         const x = i * slotWidth;
-        
+
         ctx.strokeStyle = '#444';
         ctx.lineWidth = getActualSize(2 / BASE_WIDTH, 'width');
         ctx.beginPath();
@@ -298,7 +309,9 @@ export function PlinkoGame() {
 
         let newBall = { ...ball };
 
-        newBall.vy += GRAVITY;
+        // 화면 크기에 비례하여 중력 조정 (모바일에서 너무 빠르지 않게)
+        const currentGravity = getActualSize(0.3 / BASE_HEIGHT, 'height');
+        newBall.vy += currentGravity;
         newBall.vx *= FRICTION;
         newBall.vy *= FRICTION;
         newBall.x += newBall.vx;
@@ -366,10 +379,10 @@ export function PlinkoGame() {
 
       ballsRef.current.forEach(ball => {
         ctx.save();
-        
+
         ctx.translate(ball.x, ball.y);
         ctx.scale(ball.scale, ball.scale);
-        
+
         if (ball.nearGoal) {
           ctx.shadowBlur = getActualSize(20 / BASE_WIDTH, 'width');
           ctx.shadowColor = ball.color;
@@ -379,7 +392,7 @@ export function PlinkoGame() {
         ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
         ctx.fillStyle = ball.color;
         ctx.fill();
-        
+
         ctx.beginPath();
         ctx.arc(-ball.radius / 3, -ball.radius / 3, ball.radius / 3, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
@@ -388,6 +401,7 @@ export function PlinkoGame() {
         ctx.restore();
       });
 
+      ctx.restore();
       animationRef.current = requestAnimationFrame(animate);
     };
 
@@ -401,7 +415,7 @@ export function PlinkoGame() {
   }, [canvasSize, getActualSize]);
 
   const isMobile = windowSize.width < 1024;
-  
+
   return (
     <div className={`flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 md:p-8 gap-4 sm:gap-6 ${isMobile ? 'pt-2' : ''}`}>
       {/* 헤더 - 모바일 반응형 */}
@@ -419,7 +433,7 @@ export function PlinkoGame() {
             </div>
           </div>
         </div>
-        
+
         <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
           <Button
             onClick={startGame}
@@ -443,7 +457,7 @@ export function PlinkoGame() {
       </div>
 
       {/* Canvas 컨테이너 - 반응형 */}
-      <div 
+      <div
         ref={containerRef}
         className={`relative w-full max-w-[800px] flex justify-center ${isMobile ? 'flex-1 min-h-0' : ''}`}
       >

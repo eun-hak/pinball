@@ -8,7 +8,7 @@ export default function ColorPage() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen bg-black">
+    <>
       <Navigation 
         currentGame="color" 
         onGameChange={(game) => {
@@ -20,6 +20,6 @@ export default function ColorPage() {
         }} 
       />
       <ColorGame />
-    </div>
+    </>
   )
 }

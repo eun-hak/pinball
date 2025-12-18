@@ -52,7 +52,7 @@ export function RaceGame() {
   const containerRef = useRef<HTMLDivElement>(null);
   const ballsRef = useRef<RaceBall[]>([]);
   const obstaclesRef = useRef<Obstacle[]>([]);
-  const [players, setPlayers] = useState<string[]>(["짱아", "짱구", "봉미선"]);
+  const [players, setPlayers] = useState<string[]>(["1번선수", "2번선수", "3번선수"]);
   const [newPlayer, setNewPlayer] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
   const [rankings, setRankings] = useState<
@@ -61,10 +61,10 @@ export function RaceGame() {
   const animationRef = useRef<number>();
   const isPlayingRef = useRef(false);
   const timeRef = useRef(0);
-  
+
   const CANVAS_WIDTH = 1000;
   const CANVAS_HEIGHT = 4000;
-  
+
   // 카메라 시스템 (roulette-main 방식 - Canvas 변환)
   const cameraRef = useRef<{
     x: number;
@@ -173,6 +173,7 @@ export function RaceGame() {
     // Dense grid of pegs for final scrambling
     for (let row = 0; row < 12; row++) {
       const y = 3000 + row * 120;
+      if (y >= FINISH_LINE - 100) break;
       const isOdd = row % 2 !== 0;
       const cols = isOdd ? 6 : 7;
 
@@ -219,7 +220,7 @@ export function RaceGame() {
     // 게임 시작 시에는 확대하지 않음 (모바일: 0.3, PC: 1)
     const mobileZoom = 0.3;
     const startZoom = isMobile ? mobileZoom : 1;
-    
+
     cameraRef.current.x = CANVAS_WIDTH / 2;
     cameraRef.current.y = 150;
     cameraRef.current.targetX = CANVAS_WIDTH / 2;
@@ -265,12 +266,16 @@ export function RaceGame() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
+
     // Canvas 크기를 컨테이너에 맞춤
     const resizeCanvas = () => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        canvas.width = rect.width;
-        canvas.height = rect.height;
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        canvas.style.width = `${rect.width}px`;
+        canvas.style.height = `${rect.height}px`;
       }
     };
     resizeCanvas();
@@ -284,18 +289,22 @@ export function RaceGame() {
       // Canvas 크기 재조정
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        if (canvas.width !== rect.width || canvas.height !== rect.height) {
-          canvas.width = rect.width;
-          canvas.height = rect.height;
+        const targetWidth = rect.width * dpr;
+        const targetHeight = rect.height * dpr;
+        if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+          canvas.width = targetWidth;
+          canvas.height = targetHeight;
+          canvas.style.width = `${rect.width}px`;
+          canvas.style.height = `${rect.height}px`;
         }
       }
 
       // 카메라 업데이트: 선두 구슬 찾기 및 포커스 (Canvas 변환 방식)
       const cam = cameraRef.current;
-      
+
       // 모바일과 PC의 zoom 설정
       const mobileZoom = 0.3; // 모바일: 전체 맵이 보이도록 더 작게
-      
+
       // 게임 시작 전에는 확대하지 않음
       if (!cam.shouldFollow) {
         cam.targetZoom = isMobile ? mobileZoom : 1;
@@ -303,15 +312,15 @@ export function RaceGame() {
         // 게임 중에도 모바일에서는 작게, PC에서는 기본 크기 유지 (확대하지 않음)
         cam.targetZoom = isMobile ? mobileZoom : 1;
       }
-      
+
       if (cam.shouldFollow && ballsRef.current.length > 0) {
         const activeBalls = ballsRef.current.filter((ball) => !ball.finished);
         if (activeBalls.length > 0) {
           // 선두 구슬 찾기 (Y값이 가장 큰 구슬 = 가장 아래로 가는 구슬 = 가장 앞서있는 구슬)
-          const leadingBall = activeBalls.reduce((prev, current) => 
+          const leadingBall = activeBalls.reduce((prev, current) =>
             current.y > prev.y ? current : prev
           );
-          
+
           // 카메라가 선두 구슬을 화면 중앙에 오도록 타겟 설정
           cam.targetX = leadingBall.x;
           cam.targetY = leadingBall.y;
@@ -324,19 +333,21 @@ export function RaceGame() {
         if (Math.abs(d) < 0.01) return target;
         return current + d / 10;
       };
-      
+
       cam.x = interp(cam.x, cam.targetX);
       cam.y = interp(cam.y, cam.targetY);
       cam.zoom = interp(cam.zoom, cam.targetZoom);
 
       // Canvas 변환 적용 (뷰포트 고정, 확대, 포커스)
       ctx.save();
+      ctx.scale(dpr, dpr);
+
       ctx.fillStyle = "#0a0a0a";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
+      const viewWidth = canvas.width / dpr;
+      const viewHeight = canvas.height / dpr;
+      ctx.fillRect(0, 0, viewWidth, viewHeight);
+
       // 카메라 변환: 화면 중앙에 구슬이 오도록
-      const viewWidth = canvas.width;
-      const viewHeight = canvas.height;
       ctx.translate(viewWidth / 2, viewHeight / 2);
       ctx.scale(cam.zoom, cam.zoom);
       ctx.translate(-cam.x, -cam.y);
@@ -620,6 +631,13 @@ export function RaceGame() {
 
           return newBall;
         });
+
+        // Check if all balls have finished to end the game state (triggers mobile result screen)
+        const allFinished = ballsRef.current.every((ball) => ball.finished);
+        if (allFinished && ballsRef.current.length > 0 && isPlayingRef.current) {
+          setIsPlaying(false);
+          isPlayingRef.current = false;
+        }
       }
 
       // Draw balls
@@ -671,9 +689,8 @@ export function RaceGame() {
     <div className="flex gap-6 p-8 h-screen overflow-hidden">
       {/* Left Panel - PC: 항상 보임, Mobile: 게임 시작 전에만 보임 */}
       <div
-        className={`w-80 flex-shrink-0 flex flex-col gap-6 h-full overflow-y-auto pb-8 ${
-          isPlaying ? "hidden md:flex" : "flex"
-        }`}
+        className={`w-80 flex-shrink-0 flex flex-col gap-6 h-full overflow-y-auto pb-8 ${isPlaying ? "hidden md:flex" : "flex"
+          }`}
       >
         <div className="bg-gray-900/80 backdrop-blur-md border border-gray-800 rounded-xl p-6 shadow-lg">
           <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
@@ -747,34 +764,33 @@ export function RaceGame() {
         </div>
 
         {rankings.length > 0 && (
-          <div className="bg-gray-900/80 backdrop-blur-md border border-gray-800 rounded-xl p-6 shadow-lg flex-1 overflow-hidden flex flex-col">
+          <div className="bg-gray-900/80 backdrop-blur-md border border-gray-800 rounded-xl p-6 shadow-lg flex flex-col">
             <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
               <Trophy className="size-6 text-yellow-400" />
               경기 결과
             </h3>
-            <div className="space-y-2 overflow-y-auto flex-1 custom-scrollbar">
+            <div className="space-y-2">
               {rankings.map((rank, i) => (
                 <div
                   key={i}
-                  className={`flex items-center justify-between px-4 py-3 rounded-lg border ${
-                    i === 0
-                      ? "bg-yellow-900/20 border-yellow-700/50"
-                      : i === 1
+                  className={`flex items-center justify-between px-4 py-3 rounded-lg border ${i === 0
+                    ? "bg-yellow-900/20 border-yellow-700/50"
+                    : i === 1
                       ? "bg-gray-800/40 border-gray-600/50"
                       : i === 2
-                      ? "bg-orange-900/20 border-orange-800/50"
-                      : "bg-gray-800/20 border-gray-800"
-                  }`}
+                        ? "bg-orange-900/20 border-orange-800/50"
+                        : "bg-gray-800/20 border-gray-800"
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-xl w-8 text-center font-bold">
                       {i === 0
                         ? "🥇"
                         : i === 1
-                        ? "🥈"
-                        : i === 2
-                        ? "🥉"
-                        : `${i + 1}`}
+                          ? "🥈"
+                          : i === 2
+                            ? "🥉"
+                            : `${i + 1}`}
                     </span>
                     <div
                       className="w-3 h-3 rounded-full"
@@ -795,9 +811,8 @@ export function RaceGame() {
       {/* Main Canvas Container - PC: 항상 보임, Mobile: 게임 시작 후에만 보임 */}
       <div
         ref={containerRef}
-        className={`flex-1 h-full overflow-hidden rounded-xl bg-gray-950/50 border border-gray-800 shadow-2xl relative ${
-          isPlaying ? "" : "hidden md:flex"
-        }`}
+        className={`flex-1 h-full overflow-hidden rounded-xl bg-gray-950/50 border border-gray-800 shadow-2xl relative ${isPlaying ? "" : "hidden md:flex"
+          }`}
       >
         {/* Mobile: 게임 중 뒤로가기 버튼 */}
         {isPlaying && (

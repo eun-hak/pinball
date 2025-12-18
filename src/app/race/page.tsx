@@ -8,7 +8,7 @@ export default function RacePage() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen bg-black">
+    <>
       <Navigation 
         currentGame="race" 
         onGameChange={(game) => {
@@ -20,6 +20,6 @@ export default function RacePage() {
         }} 
       />
       <RaceGame />
-    </div>
+    </>
   )
 }
