@@ -49,5 +49,30 @@ export default function SurvivalLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'VideoGame',
+    name: '서바이벌 (Survival)',
+    description: '폭탄과 자기장을 피해 마지막까지 살아남으세요. 물리 엔진 기반의 스릴 넘치는 배틀로얄 게임',
+    genre: 'Battle Royale',
+    url: `${siteUrl}/survival`,
+    playMode: 'MultiPlayer',
+    applicationCategory: 'Game',
+    operatingSystem: 'Any',
+    inLanguage: 'ko-KR',
+    author: {
+      '@type': 'Organization',
+      name: 'SpinSnap Arcade',
+    },
+  }
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      {children}
+    </>
+  )
 }

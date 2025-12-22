@@ -45,6 +45,30 @@ export default function RaceLayout({
 }: {
   children: React.ReactNode
 }) {
-  return <>{children}</>
-}
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'VideoGame',
+    name: '마블 레이스 (Marble Race)',
+    description: '장애물을 피해 가장 먼저 결승선에 도착하는 구슬은 누구일까요? 물리 엔진 기반의 스릴 넘치는 마블 레이스 게임',
+    genre: 'Racing',
+    url: `${siteUrl}/race`,
+    playMode: 'SinglePlayer',
+    applicationCategory: 'Game',
+    operatingSystem: 'Any',
+    inLanguage: 'ko-KR',
+    author: {
+      '@type': 'Organization',
+      name: 'SpinSnap Arcade',
+    },
+  }
 
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      {children}
+    </>
+  )
+}

@@ -48,5 +48,30 @@ export default function ColorLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'VideoGame',
+    name: '컬러 컨퀘스트 (Color Conquest)',
+    description: '공을 굴려 가장 많은 땅을 색칠하세요. 물리 엔진 기반의 치열한 영토 전쟁 게임',
+    genre: 'Strategy',
+    url: `${siteUrl}/color`,
+    playMode: 'MultiPlayer',
+    applicationCategory: 'Game',
+    operatingSystem: 'Any',
+    inLanguage: 'ko-KR',
+    author: {
+      '@type': 'Organization',
+      name: 'SpinSnap Arcade',
+    },
+  }
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      {children}
+    </>
+  )
 }

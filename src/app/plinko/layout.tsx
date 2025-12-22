@@ -45,6 +45,30 @@ export default function PlinkoLayout({
 }: {
   children: React.ReactNode
 }) {
-  return <>{children}</>
-}
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'VideoGame',
+    name: '플링코 (Plinko)',
+    description: '공을 떨어뜨려 행운을 시험하세요. 고전적인 확률 게임 플링코를 무료로 플레이하세요!',
+    genre: 'Arcade',
+    url: `${siteUrl}/plinko`,
+    playMode: 'SinglePlayer',
+    applicationCategory: 'Game',
+    operatingSystem: 'Any',
+    inLanguage: 'ko-KR',
+    author: {
+      '@type': 'Organization',
+      name: 'SpinSnap Arcade',
+    },
+  }
 
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      {children}
+    </>
+  )
+}
