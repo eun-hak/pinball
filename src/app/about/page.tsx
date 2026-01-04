@@ -54,7 +54,7 @@ export default function AboutPage() {
         <div className="bg-gradient-to-r from-gray-900 to-gray-800 p-8 rounded-2xl border border-gray-700 text-center">
           <h2 className="text-2xl font-bold text-white mb-4">우리의 목표</h2>
           <p className="text-gray-300 leading-relaxed max-w-2xl mx-auto">
-            "복잡한 로그인도, 긴 로딩도 없이 1초 만에 즐거움을 찾을 수 있다면 어떨까?"<br/>
+            &ldquo;복잡한 로그인도, 긴 로딩도 없이 1초 만에 즐거움을 찾을 수 있다면 어떨까?&rdquo;<br/>
             SpinSnap Arcade는 이런 고민에서 시작되었습니다. 심심할 때, 친구와 내기가 필요할 때, 
             언제든 꺼내 쓸 수 있는 디지털 장난감 상자가 되는 것이 우리의 목표입니다.
           </p>

@@ -11,7 +11,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">제1조 (목적)</h2>
             <p>
-              본 약관은 SpinSnap Arcade(이하 "회사")가 제공하는 웹 게임 서비스의 이용조건 및 절차, 회사와 회원 간의 권리, 의무 및 책임사항 등을 규정함을 목적으로 합니다.
+              본 약관은 SpinSnap Arcade(이하 &ldquo;회사&rdquo;)가 제공하는 웹 게임 서비스의 이용조건 및 절차, 회사와 회원 간의 권리, 의무 및 책임사항 등을 규정함을 목적으로 합니다.
             </p>
           </section>
 

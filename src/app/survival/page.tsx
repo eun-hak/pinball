@@ -11,6 +11,10 @@ export default function SurvivalPage() {
   const router = useRouter()
   const content = gameContents['survival']
 
+  if (!content) {
+    return null
+  }
+
   return (
     <div className="min-h-screen bg-black flex flex-col">
       <Navigation 

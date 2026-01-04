@@ -11,6 +11,10 @@ export default function PlinkoPage() {
   const router = useRouter()
   const content = gameContents['plinko']
 
+  if (!content) {
+    return null
+  }
+
   return (
     <div className="min-h-screen bg-black flex flex-col">
       <Navigation 

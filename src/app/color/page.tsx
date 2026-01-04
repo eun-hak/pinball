@@ -11,6 +11,10 @@ export default function ColorPage() {
   const router = useRouter()
   const content = gameContents['color']
 
+  if (!content) {
+    return null
+  }
+
   return (
     <div className="min-h-screen bg-black flex flex-col">
       <Navigation 

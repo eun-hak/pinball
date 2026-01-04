@@ -11,6 +11,10 @@ export default function RacePage() {
   const router = useRouter()
   const content = gameContents['race']
 
+  if (!content) {
+    return null
+  }
+
   return (
     <div className="min-h-screen bg-black flex flex-col">
       <Navigation 

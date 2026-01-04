@@ -11,7 +11,7 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">1. 총칙</h2>
             <p>
-              SpinSnap Arcade(이하 "회사")는 이용자의 개인정보를 중요시하며, "정보통신망 이용촉진 및 정보보호"에 관한 법률을 준수하고 있습니다.
+              SpinSnap Arcade(이하 &ldquo;회사&rdquo;)는 이용자의 개인정보를 중요시하며, &ldquo;정보통신망 이용촉진 및 정보보호&rdquo;에 관한 법률을 준수하고 있습니다.
               본 사이트는 별도의 회원가입 없이 이용 가능한 무료 게임 서비스를 제공하며, 게임 플레이 과정에서 개인을 식별할 수 있는 민감한 정보를 수집하지 않습니다.
             </p>
           </section>
@@ -38,7 +38,7 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">4. 쿠키(Cookie)의 운용 및 거부</h2>
             <p>
-              회사는 이용자에게 개별적인 맞춤 서비스를 제공하기 위해 이용정보를 저장하고 수시로 불러오는 '쿠키(cookie)'를 사용합니다.
+              회사는 이용자에게 개별적인 맞춤 서비스를 제공하기 위해 이용정보를 저장하고 수시로 불러오는 &apos;쿠키(cookie)&apos;를 사용합니다.
               이용자는 쿠키 설치에 대한 선택권을 가지고 있으며, 웹브라우저 옵션 설정을 통해 모든 쿠키를 허용하거나, 거부할 수 있습니다.
               단, 쿠키 설치를 거부하였을 경우 게임 설정 저장 등 일부 서비스 이용에 어려움이 있을 수 있습니다.
             </p>
