@@ -85,7 +85,7 @@ export function Navigation({ currentGame, onGameChange }: NavigationProps) {
               <Dices className="size-6 text-white" />
             </div>
             <h1 className="text-2xl text-white whitespace-nowrap">
-              Spin<span className="text-cyan-400">Snap</span>
+              Plenty<span className="text-cyan-400">Arcade</span>
             </h1>
           </Link>
 

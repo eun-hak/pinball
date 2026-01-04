@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://spinsnap-arcade.com";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://plentyarcade.com";
 
 export const metadata: Metadata = {
   title: "서바이벌 게임",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     "핀볼서바이벌",
   ],
   openGraph: {
-    title: "서바이벌 게임 - SpinSnap Arcade",
+    title: "서바이벌 게임 - PlentyArcade",
     description:
       "폭탄과 자기장을 피해 마지막까지 살아남으세요. 배틀로얄 스타일의 서바이벌 게임!",
     type: "website",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "서바이벌 게임 - SpinSnap Arcade",
+    title: "서바이벌 게임 - PlentyArcade",
     description: "폭탄과 자기장을 피해 마지막까지 살아남으세요",
   },
   alternates: {
@@ -62,7 +62,7 @@ export default function SurvivalLayout({
     inLanguage: 'ko-KR',
     author: {
       '@type': 'Organization',
-      name: 'SpinSnap Arcade',
+      name: 'PlentyArcade',
     },
   }
 

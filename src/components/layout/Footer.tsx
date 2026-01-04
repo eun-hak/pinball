@@ -11,13 +11,13 @@ export function Footer() {
           
           {/* 브랜드 정보 */}
           <div className="col-span-1 md:col-span-2">
-            <h2 className="text-xl font-bold text-white mb-4">SpinSnap Arcade</h2>
+            <h2 className="text-xl font-bold text-white mb-4">PlentyArcade</h2>
             <p className="text-sm leading-relaxed mb-4 max-w-sm">
-              SpinSnap Arcade는 물리 엔진을 기반으로 한 다양한 인터랙티브 웹 게임을 제공합니다. 
+              PlentyArcade는 물리 엔진을 기반으로 한 다양한 인터랙티브 웹 게임을 제공합니다. 
               설치 없이 브라우저에서 바로 즐기는 무료 게임 플랫폼입니다.
             </p>
             <p className="text-xs text-gray-500">
-              © {currentYear} SpinSnap Arcade. All rights reserved.
+              © {currentYear} PlentyArcade. All rights reserved.
             </p>
           </div>
 

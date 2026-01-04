@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://spinsnap-arcade.com";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://plentyarcade.com";
 
 export const metadata: Metadata = {
   title: '플링코 게임',
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     '브라우저플링코',
   ],
   openGraph: {
-    title: '플링코 게임 - SpinSnap Arcade',
+    title: '플링코 게임 - PlentyArcade',
     description: '공을 떨어뜨려 행운을 시험하세요. 고전적인 확률 게임 플링코를 무료로 플레이하세요!',
     type: 'website',
     url: `${siteUrl}/plinko`,
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: '플링코 게임 - SpinSnap Arcade',
+    title: '플링코 게임 - PlentyArcade',
     description: '공을 떨어뜨려 행운을 시험하세요. 고전적인 확률 게임',
   },
   alternates: {
@@ -58,7 +58,7 @@ export default function PlinkoLayout({
     inLanguage: 'ko-KR',
     author: {
       '@type': 'Organization',
-      name: 'SpinSnap Arcade',
+      name: 'PlentyArcade',
     },
   }
 

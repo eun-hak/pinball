@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://spinsnap-arcade.com";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://plentyarcade.com";
 
 export const metadata: Metadata = {
   title: "Color Conquest 게임",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     "물리게임",
   ],
   openGraph: {
-    title: "Color Conquest 게임 - SpinSnap Arcade",
+    title: "Color Conquest 게임 - PlentyArcade",
     description: "공을 굴려 가장 많은 땅을 색칠하세요. 치열한 영토 전쟁 게임!",
     type: "website",
     url: `${siteUrl}/color`,
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Color Conquest 게임 - SpinSnap Arcade",
+    title: "Color Conquest 게임 - PlentyArcade",
     description: "공을 굴려 가장 많은 땅을 색칠하세요. 치열한 영토 전쟁!",
   },
   alternates: {
@@ -61,7 +61,7 @@ export default function ColorLayout({
     inLanguage: 'ko-KR',
     author: {
       '@type': 'Organization',
-      name: 'SpinSnap Arcade',
+      name: 'PlentyArcade',
     },
   }
 

@@ -40,7 +40,7 @@ export const gameContents: Record<string, GameContent> = {
       },
       {
         question: "게임 이용료가 있나요?",
-        answer: "SpinSnap Arcade의 모든 게임은 100% 무료로 제공됩니다."
+        answer: "PlentyArcade의 모든 게임은 100% 무료로 제공됩니다."
       },
       {
         question: "결과가 조작되지 않나요?",

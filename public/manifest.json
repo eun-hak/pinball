@@ -1,6 +1,6 @@
 {
-  "name": "SpinSnap Arcade - 무료 온라인 물리 엔진 게임",
-  "short_name": "SpinSnap Arcade",
+  "name": "PlentyArcade - 무료 온라인 물리 엔진 게임",
+  "short_name": "PlentyArcade",
   "description": "물리 엔진으로 구현된 다양한 인터랙티브 게임을 즐겨보세요. 플링코, 마블 레이스, 서바이벌, 컬러 컨퀘스트까지!",
   "start_url": "/",
   "scope": "/",
@@ -24,7 +24,7 @@
       "src": "/og-image.svg",
       "sizes": "1200x630",
       "type": "image/svg+xml",
-      "label": "SpinSnap Arcade 홈화면"
+      "label": "PlentyArcade 홈화면"
     }
   ],
   "shortcuts": [

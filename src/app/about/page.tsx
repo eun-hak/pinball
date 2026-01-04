@@ -10,7 +10,7 @@ export default function AboutPage() {
         {/* 헤더 섹션 */}
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold text-white mb-6">
-            About <span className="text-cyan-400">SpinSnap Arcade</span>
+            About <span className="text-cyan-400">PlentyArcade</span>
           </h1>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
             순수한 물리 엔진의 재미, 설치 없는 간편함.<br/>
@@ -55,7 +55,7 @@ export default function AboutPage() {
           <h2 className="text-2xl font-bold text-white mb-4">우리의 목표</h2>
           <p className="text-gray-300 leading-relaxed max-w-2xl mx-auto">
             &ldquo;복잡한 로그인도, 긴 로딩도 없이 1초 만에 즐거움을 찾을 수 있다면 어떨까?&rdquo;<br/>
-            SpinSnap Arcade는 이런 고민에서 시작되었습니다. 심심할 때, 친구와 내기가 필요할 때, 
+            PlentyArcade는 이런 고민에서 시작되었습니다. 심심할 때, 친구와 내기가 필요할 때, 
             언제든 꺼내 쓸 수 있는 디지털 장난감 상자가 되는 것이 우리의 목표입니다.
           </p>
         </div>

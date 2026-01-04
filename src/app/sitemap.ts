@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://spinsnap-arcade.com";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://plentyarcade.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const currentDate = new Date();

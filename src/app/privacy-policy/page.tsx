@@ -11,7 +11,7 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">1. 총칙</h2>
             <p>
-              SpinSnap Arcade(이하 &ldquo;회사&rdquo;)는 이용자의 개인정보를 중요시하며, &ldquo;정보통신망 이용촉진 및 정보보호&rdquo;에 관한 법률을 준수하고 있습니다.
+              PlentyArcade(이하 &ldquo;회사&rdquo;)는 이용자의 개인정보를 중요시하며, &ldquo;정보통신망 이용촉진 및 정보보호&rdquo;에 관한 법률을 준수하고 있습니다.
               본 사이트는 별도의 회원가입 없이 이용 가능한 무료 게임 서비스를 제공하며, 게임 플레이 과정에서 개인을 식별할 수 있는 민감한 정보를 수집하지 않습니다.
             </p>
           </section>
@@ -55,7 +55,7 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">6. 개인정보 보호책임자</h2>
             <p>이용자는 회사의 서비스를 이용하며 발생하는 모든 개인정보보호 관련 민원을 아래 연락처로 신고하실 수 있습니다.</p>
-            <p className="mt-2 font-medium text-cyan-400">문의: spinsnap.arcade@gmail.com (예시)</p>
+            <p className="mt-2 font-medium text-cyan-400">문의: plentyarcade@gmail.com</p>
           </section>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://spinsnap-arcade.com";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://plentyarcade.com";
 
 export const metadata: Metadata = {
   title: '마블 레이스 게임',
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     '온라인레이스게임',
   ],
   openGraph: {
-    title: '마블 레이스 게임 - SpinSnap Arcade',
+    title: '마블 레이스 게임 - PlentyArcade',
     description: '장애물을 피해 가장 먼저 결승선에 도착하는 구슬은 누구일까요? 마블 레이스 게임을 플레이하세요!',
     type: 'website',
     url: `${siteUrl}/race`,
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: '마블 레이스 게임 - SpinSnap Arcade',
+    title: '마블 레이스 게임 - PlentyArcade',
     description: '장애물을 피해 가장 먼저 결승선에 도착하는 구슬은 누구일까요?',
   },
   alternates: {
@@ -58,7 +58,7 @@ export default function RaceLayout({
     inLanguage: 'ko-KR',
     author: {
       '@type': 'Organization',
-      name: 'SpinSnap Arcade',
+      name: 'PlentyArcade',
     },
   }
 

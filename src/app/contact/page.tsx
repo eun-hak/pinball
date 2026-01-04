@@ -10,7 +10,7 @@ export default function ContactPage() {
         
         <div className="bg-gray-900/50 p-8 rounded-xl border border-gray-800 space-y-8">
           <p className="text-lg text-gray-300">
-            SpinSnap Arcade를 이용해주셔서 감사합니다.<br/>
+            PlentyArcade를 이용해주셔서 감사합니다.<br/>
             게임 버그 제보, 제휴 문의, 기타 의견이 있으시면 아래 채널로 연락해 주세요.
           </p>
 
@@ -25,8 +25,8 @@ export default function ContactPage() {
               <p className="text-gray-400 mb-4">
                 가장 빠르고 정확한 답변을 받으실 수 있습니다.
               </p>
-              <a href="mailto:spinsnap.arcade@gmail.com" className="text-cyan-400 hover:text-cyan-300 font-medium text-lg">
-                spinsnap.arcade@gmail.com
+              <a href="mailto:plentyarcade@gmail.com" className="text-cyan-400 hover:text-cyan-300 font-medium text-lg">
+                plentyarcade@gmail.com
               </a>
             </div>
 

@@ -15,7 +15,7 @@ export function Home({ onGameSelect }: HomeProps) {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-900/40 via-black to-black -z-10" />
         
         <h1 className="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-600 mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          SpinSnap Arcade
+          PlentyArcade
         </h1>
         <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-10 animate-in fade-in slide-in-from-bottom-5 duration-700 delay-100">
           물리 엔진으로 구현된 다양한 인터랙티브 게임을 즐겨보세요.

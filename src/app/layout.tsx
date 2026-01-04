@@ -1,13 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import "@/index.css";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://spinsnap-arcade.com";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://plentyarcade.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "SpinSnap Arcade - 무료 온라인 물리 엔진 게임",
-    template: "%s | SpinSnap Arcade",
+    default: "PlentyArcade - 무료 온라인 물리 엔진 게임",
+    template: "%s | PlentyArcade",
   },
   description:
     "물리 엔진으로 구현된 다양한 인터랙티브 게임을 즐겨보세요. 플링코, 마블 레이스, 서바이벌, 컬러 컨퀘스트까지! 브라우저에서 바로 즐기는 무료 온라인 게임.",
@@ -24,16 +24,15 @@ export const metadata: Metadata = {
     "서바이벌게임",
     "컬러게임",
     "확률게임",
-    "SpinSnap",
-    "SpinSnap Arcade",
+    "PlentyArcade",
     "웹게임",
     "HTML5게임",
     "캐주얼게임",
     "무료 브라우저게임",
   ],
-  authors: [{ name: "SpinSnap Arcade Team", url: siteUrl }],
-  creator: "SpinSnap Arcade",
-  publisher: "SpinSnap Arcade",
+  authors: [{ name: "PlentyArcade Team", url: siteUrl }],
+  creator: "PlentyArcade",
+  publisher: "PlentyArcade",
   formatDetection: {
     email: false,
     address: false,
@@ -43,8 +42,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ko_KR",
     url: siteUrl,
-    siteName: "SpinSnap Arcade",
-    title: "SpinSnap Arcade - 무료 온라인 물리 엔진 게임",
+    siteName: "PlentyArcade",
+    title: "PlentyArcade - 무료 온라인 물리 엔진 게임",
     description:
       "물리 엔진으로 구현된 다양한 인터랙티브 게임을 즐겨보세요. 플링코, 마블 레이스, 서바이벌, 컬러 컨퀘스트까지!",
     images: [
@@ -52,13 +51,13 @@ export const metadata: Metadata = {
         url: "/og-image.svg",
         width: 1200,
         height: 630,
-        alt: "SpinSnap Arcade - 무료 온라인 게임",
+        alt: "PlentyArcade - 무료 온라인 게임",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "SpinSnap Arcade - 무료 온라인 물리 엔진 게임",
+    title: "PlentyArcade - 무료 온라인 물리 엔진 게임",
     description:
       "물리 엔진으로 구현된 다양한 인터랙티브 게임을 즐겨보세요. 플링코, 마블 레이스, 서바이벌, 컬러 컨퀘스트까지!",
     images: ["/og-image.svg"],
@@ -120,7 +119,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
-              name: "SpinSnap Arcade",
+              name: "PlentyArcade",
               url: siteUrl,
               description:
                 "물리 엔진으로 구현된 다양한 인터랙티브 게임을 즐겨보세요. 플링코, 마블 레이스, 서바이벌, 컬러 컨퀘스트까지!",
@@ -139,7 +138,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "SpinSnap Arcade",
+              name: "PlentyArcade",
               url: siteUrl,
               applicationCategory: "GameApplication",
               operatingSystem: "Any",
