@@ -19,7 +19,7 @@ public/
 ```
 
 ### 📝 메타데이터 설정 (src/app/)
-##
+
 ```
 src/app/
 ├── layout.tsx               # ✅ 업데이트됨 - 글로벌 SEO 메타데이터
