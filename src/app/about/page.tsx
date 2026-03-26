@@ -1,5 +1,4 @@
 import React from "react";
-import { Footer } from "@/components/layout/Footer";
 import { Dices, Zap, Shield, Globe } from "lucide-react";
 
 export default function AboutPage() {
@@ -61,7 +60,6 @@ export default function AboutPage() {
         </div>
 
       </div>
-      <Footer />
     </main>
   );
 }

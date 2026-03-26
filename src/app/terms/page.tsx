@@ -1,5 +1,4 @@
 import React from "react";
-import { Footer } from "@/components/layout/Footer";
 
 export default function TermsPage() {
   return (
@@ -49,7 +48,6 @@ export default function TermsPage() {
           </section>
         </div>
       </div>
-      <Footer />
     </main>
   );
 }

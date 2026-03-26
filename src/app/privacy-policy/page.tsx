@@ -1,5 +1,4 @@
 import React from "react";
-import { Footer } from "@/components/layout/Footer";
 
 export default function PrivacyPolicyPage() {
   return (
@@ -59,7 +58,6 @@ export default function PrivacyPolicyPage() {
           </section>
         </div>
       </div>
-      <Footer />
     </main>
   );
 }

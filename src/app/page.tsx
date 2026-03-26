@@ -2,6 +2,7 @@
 
 import { Navigation } from '@/components/Navigation'
 import { Home } from '@/components/pages/Home'
+import { Footer } from '@/components/layout/Footer'
 import { useRouter } from 'next/navigation'
 
 export default function HomePage() {
@@ -22,6 +23,7 @@ export default function HomePage() {
         }
       }} />
       <Home onGameSelect={handleGameSelect} />
+      <Footer />
       {/* </div> */}
     </>
   )

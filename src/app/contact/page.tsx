@@ -1,5 +1,4 @@
 import React from "react";
-import { Footer } from "@/components/layout/Footer";
 import { Mail, MessageCircle } from "lucide-react";
 
 export default function ContactPage() {
@@ -57,7 +56,6 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
-      <Footer />
     </main>
   );
 }

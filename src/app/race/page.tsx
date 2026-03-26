@@ -2,18 +2,10 @@
 
 import { Navigation } from '@/components/Navigation'
 import { RaceGame } from '@/components/pages/RaceGame'
-import { GameInfoSection } from '@/components/game/GameInfoSection'
-import { gameContents } from '@/data/game-content'
-import { Footer } from '@/components/layout/Footer'
 import { useRouter } from 'next/navigation'
 
 export default function RacePage() {
   const router = useRouter()
-  const content = gameContents['race']
-
-  if (!content) {
-    return null
-  }
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
@@ -30,8 +22,6 @@ export default function RacePage() {
       <div className="flex-1">
         <RaceGame />
       </div>
-      <GameInfoSection content={content} />
-      <Footer />
     </div>
   )
 }
