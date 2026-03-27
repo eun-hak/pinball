@@ -1,8 +1,12 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "@/index.css";
 import { getSiteUrl } from "@/lib/site";
 
 const siteUrl = getSiteUrl();
+
+/** Google Analytics 4 측정 ID (정적) */
+const GA_MEASUREMENT_ID = "G-NJ4K4YL2MR";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -93,6 +97,12 @@ export const metadata: Metadata = {
     canonical: siteUrl,
   },
   category: "games",
+  verification: {
+    google: "nGLC6wqeingyxdWpDtTR9DKlBw7TNDT9A8_l8PrHWt0",
+    other: {
+      "naver-site-verification": "29a9b3fb6b495ae313ff455875696a202b6026e8",
+    },
+  },
 };
 
 export const viewport: Viewport = {
@@ -115,6 +125,18 @@ export default function RootLayout({
 
     <html lang="ko" className="bg-black">
       <body className="antialiased bg-black">
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}');
+          `}
+        </Script>
         {children}
         {/* Structured Data for SEO */}
         <script
