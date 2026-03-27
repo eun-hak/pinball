@@ -8,7 +8,7 @@ import { useIsMobile } from "@/components/ui/use-mobile";
 interface NavigationProps {
   currentGame: "home" | "plinko" | "race" | "survival" | "color";
   onGameChange: (
-    game: "home" | "plinko" | "race" | "survival" | "color"
+    game: "home" | "plinko" | "race" | "survival" | "color",
   ) => void;
 }
 
@@ -16,7 +16,7 @@ export function Navigation({ currentGame, onGameChange }: NavigationProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isMobile = useIsMobile();
   const activeGame = currentGame;
-
+  // test
   // ESC 키로 메뉴 닫기
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -111,10 +111,10 @@ export function Navigation({ currentGame, onGameChange }: NavigationProps) {
                         ? isHome
                           ? "bg-gray-700 text-white"
                           : link.game === "plinko" || link.game === "race"
-                          ? "bg-cyan-500 text-white shadow-lg shadow-cyan-500/50"
-                          : link.game === "survival"
-                          ? "bg-purple-600 text-white shadow-lg shadow-purple-500/50"
-                          : "bg-pink-600 text-white shadow-lg shadow-pink-500/50"
+                            ? "bg-cyan-500 text-white shadow-lg shadow-cyan-500/50"
+                            : link.game === "survival"
+                              ? "bg-purple-600 text-white shadow-lg shadow-purple-500/50"
+                              : "bg-pink-600 text-white shadow-lg shadow-pink-500/50"
                         : "text-gray-400 hover:text-white"
                     }`}
                   >
@@ -169,8 +169,8 @@ export function Navigation({ currentGame, onGameChange }: NavigationProps) {
                           ? link.game === "plinko" || link.game === "race"
                             ? "bg-cyan-500/90 text-white"
                             : link.game === "survival"
-                            ? "bg-purple-600/90 text-white"
-                            : "bg-pink-600/90 text-white"
+                              ? "bg-purple-600/90 text-white"
+                              : "bg-pink-600/90 text-white"
                           : "text-gray-300 hover:text-white hover:bg-gray-800/80"
                       }`}
                     >
