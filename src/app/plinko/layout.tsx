@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
+import { getSiteUrl } from '@/lib/site'
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://plentyarcade.com";
+const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
   title: '플링코 게임',

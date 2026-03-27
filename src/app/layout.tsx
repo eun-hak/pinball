@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import "@/index.css";
+import { getSiteUrl } from "@/lib/site";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://plentyarcade.com";
+const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -25,6 +26,9 @@ export const metadata: Metadata = {
     "컬러게임",
     "확률게임",
     "PlentyArcade",
+    "pinball",
+    "plentyer",
+    "pinball.plentyer.com",
     "웹게임",
     "HTML5게임",
     "캐주얼게임",
